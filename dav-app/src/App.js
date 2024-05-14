@@ -1,18 +1,18 @@
 import './App.css';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import React, {useEffect, useRef, useState} from 'react';
-import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
+import mapboxgl from 'mapbox-gl'; 
 import TestPage from './components/TestPage';
-
+import axios from 'axios';
 mapboxgl.accessToken = 'pk.eyJ1IjoiY2NoYTAwNTciLCJhIjoiY2swOWZ5ODVwMDhjYTNjbnljN3Z5MXI4ayJ9._ibGMEIebSWPwmIEbUHc6A';
-
+const interpolateHeatmapLayer = require('interpolateheatmaplayer');
 
 function App() {
   const mapContainer = useRef(null);
   const map = useRef(null);
   const [lng, setLng] = useState(144.9);
   const [lat, setLat] = useState(-37.8);
-  const [zoom, setZoom] = useState(9);
+  const [zoom, setZoom] = useState(0);
 
   useEffect(() => {
     if (map.current) return;
@@ -21,7 +21,49 @@ function App() {
       center: [lng, lat],
       zoom: zoom,
       projection: 'mercator',
-      maxBounds: [[-180, -90], [180, 90]]
+      maxBounds: [[-180, -85], [180, 85]]
+    });
+    
+    map.current.on('load', () => {
+      map.current.addSource('ir', {
+        'type': 'image',
+        'url': 'http://localhost:5000/test/ir',
+        'coordinates': [
+          [-180, 85],
+          [180, 85],
+          [180, -85],
+          [-180, -85]
+        ]
+      });
+
+      map.current.addLayer({
+        id: 'ir-layer',
+        'type': 'raster',
+        'source': 'ir',
+        'paint': { 'raster-fade-duration': 0 }
+      });
+
+      map.current.setPaintProperty('ir-layer','raster-opacity',0.7);
+
+      map.current.addSource('dav', {
+        'type': 'image',
+        'url': 'http://localhost:5000/test/dav',
+        'coordinates': [
+          [-180, 85],
+          [180, 85],
+          [180, -85],
+          [-180, -85]
+        ]
+      });
+
+      map.current.addLayer({
+        id: 'dav-layer',
+        'type': 'raster',
+        'source': 'dav',
+        'paint': { 'raster-fade-duration': 0 }
+      });
+
+      map.current.setPaintProperty('dav-layer','raster-opacity',0.5);
     });
   });
   

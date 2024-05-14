@@ -8,6 +8,8 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
+    "earcut": "^2.2.3",
+    "interpolateheatmaplayer": "^1.4.0",
     "mapbox-gl": "^3.3.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.2",

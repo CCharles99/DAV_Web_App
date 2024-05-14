@@ -1,12 +1,18 @@
-const fs = require('node:fs')
+const fs = require('fs')
 const express = require('express');
 const router = express.Router();
 
-router.route('/').get( (req, res) => {
-    fs.readFile(`../images/September 23/DAV-json/2022-09-23_3.json`, 'utf8', (err, data) => {
-        if (err) console.log(err);
-        console.log(data.length);
-        res.json(data);
+router.route('/dav').get( (req, res) => {
+    fs.readFile(`../images/September-23/DAV-png/Sep23_1.png`, (err, imageData) => {
+        if (err) throw err;
+        res.send(imageData);
+    });
+});
+
+router.route('/ir').get( (req, res) => {
+    fs.readFile(`../images/September-23/IR-png/Sep23_1.png`, (err, imageData) => {
+        if (err) throw err;
+        res.send(imageData);
     });
 });
 
