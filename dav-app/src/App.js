@@ -10,9 +10,9 @@ const interpolateHeatmapLayer = require('interpolateheatmaplayer');
 function App() {
   const mapContainer = useRef(null);
   const map = useRef(null);
-  const [lng, setLng] = useState(144.9);
-  const [lat, setLat] = useState(-37.8);
-  const [zoom, setZoom] = useState(0);
+  const [lng, setLng] = useState(0);
+  const [lat, setLat] = useState(0);
+  const [zoom, setZoom] = useState(2);
 
   useEffect(() => {
     if (map.current) return;
@@ -20,19 +20,19 @@ function App() {
       container: mapContainer.current,
       center: [lng, lat],
       zoom: zoom,
-      projection: 'mercator',
-      maxBounds: [[-180, -85], [180, 85]]
+      projection: 'equirectangular',
+      maxBounds: [[-110, -9], [110, 9]], // why???
     });
-    
+
     map.current.on('load', () => {
       map.current.addSource('ir', {
         'type': 'image',
         'url': 'http://localhost:5000/test/ir',
         'coordinates': [
-          [-180, 85],
-          [180, 85],
-          [180, -85],
-          [-180, -85]
+          [-182.921, 63],
+          [182.921, 63],
+          [182.921, -63],
+          [-182.921, -63]
         ]
       });
 
@@ -43,16 +43,16 @@ function App() {
         'paint': { 'raster-fade-duration': 0 }
       });
 
-      map.current.setPaintProperty('ir-layer','raster-opacity',0.7);
+      map.current.setPaintProperty('ir-layer','raster-opacity',0.9);
 
       map.current.addSource('dav', {
         'type': 'image',
         'url': 'http://localhost:5000/test/dav',
         'coordinates': [
-          [-180, 85],
-          [180, 85],
-          [180, -85],
-          [-180, -85]
+          [-182.921, 63],
+          [182.921, 63],
+          [182.921, -63],
+          [-182.921, -63]
         ]
       });
 
