@@ -10,9 +10,9 @@ const interpolateHeatmapLayer = require('interpolateheatmaplayer');
 function App() {
   const mapContainer = useRef(null);
   const map = useRef(null);
-  const [lng, setLng] = useState(0);
-  const [lat, setLat] = useState(0);
-  const [zoom, setZoom] = useState(2);
+  const [lng, setLng] = useState(-74);
+  const [lat, setLat] = useState(41);
+  const [zoom, setZoom] = useState(3);
 
   useEffect(() => {
     if (map.current) return;
@@ -20,19 +20,23 @@ function App() {
       container: mapContainer.current,
       center: [lng, lat],
       zoom: zoom,
-      projection: 'equirectangular',
-      maxBounds: [[-110, -9], [110, 9]], // why???
+      bearingSnap: 180,
+      maxPitch: 0,
+      maxBounds: [
+        [-180, -70], // [west, south]
+        [180, 70] 
+      ],
     });
 
     map.current.on('load', () => {
       map.current.addSource('ir', {
         'type': 'image',
-        'url': 'http://localhost:5000/test/ir',
+        'url': `http://localhost:5000/image/IR/2022-09-23/1`,
         'coordinates': [
-          [-182.921, 63],
-          [182.921, 63],
-          [182.921, -63],
-          [-182.921, -63]
+          [-181, 63],
+          [181, 63],
+          [181, -63],
+          [-181, -63]
         ]
       });
 
@@ -47,7 +51,7 @@ function App() {
 
       map.current.addSource('dav', {
         'type': 'image',
-        'url': 'http://localhost:5000/test/dav',
+        'url': `http://localhost:5000/image/DAV/2022-09-23/1`,
         'coordinates': [
           [-182.921, 63],
           [182.921, 63],
@@ -64,6 +68,18 @@ function App() {
       });
 
       map.current.setPaintProperty('dav-layer','raster-opacity',0.5);
+
+      let i = 2;
+      const timer = setInterval(() => {
+        if (i < 49) {
+          map.current.getSource('dav').updateImage({ url: `http://localhost:5000/image/DAV/2022-09-23/${i}`});
+          map.current.getSource('ir').updateImage({ url: `http://localhost:5000/image/IR/2022-09-23/${i}`});
+          console.log(map.current.getSource('dav').url)
+          i++
+        } else {
+          i = 1;
+        }
+      }, 300)
     });
   });
   
