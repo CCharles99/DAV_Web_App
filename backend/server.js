@@ -8,7 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/test', require('./routes/loadfiletest'));
+app.use('/image', require('./routes/image'));
 
 /**
  * Start server
