@@ -20,6 +20,7 @@ function App() {
       container: mapContainer.current,
       center: [lng, lat],
       zoom: zoom,
+      projection: 'equirectangular',
       bearingSnap: 180,
       maxPitch: 0,
       maxBounds: [
@@ -27,17 +28,25 @@ function App() {
         [180, 70] 
       ],
     });
+    const corners = [
+      [-182.921, 62.5],
+      [182.921, 62.5],
+      [182.921, -62.5],
+      [-182.921, -62.5]
+    ];
+
+    const cornersLarge = [
+      [-180.7, 60.55],
+      [180.7, 60.55],
+      [180.7, -60.55],
+      [-180.7, -60.55]
+    ]
 
     map.current.on('load', () => {
       map.current.addSource('ir', {
         'type': 'image',
         'url': `http://localhost:5000/image/IR/2022-09-23/1`,
-        'coordinates': [
-          [-181, 63],
-          [181, 63],
-          [181, -63],
-          [-181, -63]
-        ]
+        'coordinates': corners
       });
 
       map.current.addLayer({
@@ -52,12 +61,7 @@ function App() {
       map.current.addSource('dav', {
         'type': 'image',
         'url': `http://localhost:5000/image/DAV/2022-09-23/1`,
-        'coordinates': [
-          [-182.921, 63],
-          [182.921, 63],
-          [182.921, -63],
-          [-182.921, -63]
-        ]
+        'coordinates': corners
       });
 
       map.current.addLayer({
@@ -79,7 +83,7 @@ function App() {
         } else {
           i = 1;
         }
-      }, 300)
+      }, 100)
     });
   });
   
