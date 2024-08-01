@@ -1,0 +1,39 @@
+.map-container {
+    height: 644px;
+    width: 100%;
+}
+
+.map {
+    height: 100%;
+    width: 100%;
+}
+
+.navbar-container {
+    padding-left: 20px;
+    display: flex;
+    margin: 0;
+    height: 35px;
+    align-items: center;
+}
+
+.accordion-container {
+    position: absolute;
+    top: 54px;
+    width: 200px;
+    left: 2px;
+}
+
+.datesearchbar--container {
+    padding-top: 15px;
+    padding-left: 160px;
+    display: flex;
+}
+
+.play-bar {
+    top: 656px;
+    left: 100px;
+    right: 280px;
+    position: absolute;
+    display: flex;
+    align-items: center;
+}
