@@ -184,7 +184,7 @@ class IbtracsReader:
 
     def _get_index_from_name(self, name, year):
         if self.name_dict is None:
-            with open("name_dict.pkl", "rb") as pkl_file:
+            with open("C:/Users/cjcha/Dev/ReactProjects/DAV_Web_App/backend/python_scripts/name_dict.pkl", "rb") as pkl_file:
                 self.name_dict = pickle.load(pkl_file)
         name = name.upper()
         if year not in self.name_dict:
@@ -270,7 +270,7 @@ or name and year pair (str and int, respectively). Got {tc_identifier!r}."
 
         """
         if self.time_dict is None:
-            with open("time_dict.pkl", "rb") as pkl_file:
+            with open("C:/Users/cjcha/Dev/ReactProjects/DAV_Web_App/backend/python_scripts/time_dict.pkl", "rb") as pkl_file:
                 self.time_dict = pickle.load(pkl_file)
         time = t.strptime(time_in, "%Y-%m-%d %H-%M-%S")
         three_hourly = (time.tm_hour % 3 == 0) and (time.tm_min == 0) and (time.tm_sec == 0)

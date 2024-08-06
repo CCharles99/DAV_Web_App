@@ -9,8 +9,9 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/image', require('./routes/image'));
-app.use('/test', require('./routes/test'));
+app.use('/tc', require('./routes/tc'));
 
+app.use('/test', require('./routes/test'));
 /**
  * Start server
  */

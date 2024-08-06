@@ -43,8 +43,11 @@ function MainPage() {
     }
 
     useEffect(() => {
-        axios.get(`http://localhost:5000/test/py`)
-            .then(res => console.log(res));
+        axios.get(`http://localhost:5000/tc/byID/13196`)
+            .then(res => console.log(res.data));
+
+        axios.get(`http://localhost:5000/tc/byDate/2022-09-23`)
+            .then(res => console.log(res.data));
 
         // initialise map
         if (map.current) return;
