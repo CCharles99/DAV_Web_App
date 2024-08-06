@@ -43,8 +43,8 @@ function MainPage() {
     }
 
     useEffect(() => {
-        // axios.get(`http://localhost:5000/image/IR/${date}/1`)
-        //     .then(res => console.log(res));
+        axios.get(`http://localhost:5000/test/py`)
+            .then(res => console.log(res));
 
         // initialise map
         if (map.current) return;
