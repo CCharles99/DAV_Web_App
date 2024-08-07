@@ -9,8 +9,9 @@ function DateSearchBar() {
     const [dateValue, setDateValue] = useState("");
 
     const handleSubmit = (event) => {
-        event.preventDefault();
-        navigate(`/date/${dateValue}`)
+        // event.preventDefault();
+        // navigate(`/date/${dateValue}`)
+        console.log(event);
     }
 
     const handleSelect = (event) => {

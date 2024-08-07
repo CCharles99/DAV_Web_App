@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function BookmarkList(props) {
+function BookmarkList({handleJump, setFreeCam, handleView, center, zoom, view}) {
     const [bookmarkList, setBookmarkList] = useState([]);
     const [bookmarkCount, setBookmarkCount] = useState(1);
 
@@ -26,15 +26,15 @@ function BookmarkList(props) {
                 <div className='bookmark--container'>
                     <button
                         onClick={() => {
-                            props.handleJump(bookmark.center, bookmark.zoom);
-                            props.setFreeCam(true);
-                            props.handleView(bookmark.view);
+                            handleJump(bookmark.center, bookmark.zoom);
+                            setFreeCam(true);
+                            handleView(bookmark.view);
                         }}
                     >Bookmark {bookmark.name}</button>
                     <button onClick={() => handleDelete(bookmark.name)}>del</button>
                 </div>
             ))}
-            <button onClick={() => addBookmark(props.center, props.zoom, props.view)}>add bookmark</button>
+            <button onClick={() => addBookmark(center, zoom, view)}>add bookmark</button>
         </div>
     );
 }

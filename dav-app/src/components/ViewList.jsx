@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import data from '../data/ViewData.json'
 
-function ViewList(props) {
+function ViewList({handleJump, setFreeCam, handleView}) {
 
     const [viewData, setViewData] = useState(data);
     return (
@@ -10,14 +10,14 @@ function ViewList(props) {
                 <div className='bookmark--container'>
                     <button
                         onClick={() => {
-                            props.handleJump(view.center, view.zoom);
-                            props.setFreeCam(false);
-                            props.handleView({symbol: view.symbol, bounds: view.bounds})
+                            handleJump(view.center, view.zoom);
+                            setFreeCam(false);
+                            handleView({symbol: view.symbol, bounds: view.bounds})
                         }}
                     >{view.name}</button>
                 </div>
             ))}
-            <button onClick={() => props.setFreeCam(true)}>Free Mode</button>
+            <button onClick={() => setFreeCam(true)}>Free Mode</button>
         </div>
     );
 }
