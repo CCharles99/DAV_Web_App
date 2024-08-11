@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 
-function BookmarkList({handleJump, setFreeCam, handleView, center, zoom, view}) {
+function BookmarkList({handleSearch, lng, lat, zoom, view}) {
     const [bookmarkList, setBookmarkList] = useState([]);
     const [bookmarkCount, setBookmarkCount] = useState(1);
 
-    function addBookmark(bookmarkCenter, bookmarkZoom, bookmarkView) {
+    function addBookmark(bookmarkLng, bookmarkLat, bookmarkZoom, bookmarkView) {
         const newBookmark = {
             name: `${bookmarkCount}`,
-            center: bookmarkCenter,
+            lng: bookmarkLng,
+            lat: bookmarkLat,
             zoom: bookmarkZoom,
             view: bookmarkView
         }
@@ -26,15 +27,14 @@ function BookmarkList({handleJump, setFreeCam, handleView, center, zoom, view}) 
                 <div className='bookmark--container'>
                     <button
                         onClick={() => {
-                            handleJump(bookmark.center, bookmark.zoom);
-                            setFreeCam(true);
-                            handleView(bookmark.view);
+                            console.log()
+                            handleSearch({lng: bookmark.lng, lat: bookmark.lat, zoom: bookmark.zoom, view: bookmark.view, freeCam: true});
                         }}
                     >Bookmark {bookmark.name}</button>
                     <button onClick={() => handleDelete(bookmark.name)}>del</button>
                 </div>
             ))}
-            <button onClick={() => addBookmark(center, zoom, view)}>add bookmark</button>
+            <button onClick={() => addBookmark(lng, lat, zoom, view)}>add bookmark</button>
         </div>
     );
 }

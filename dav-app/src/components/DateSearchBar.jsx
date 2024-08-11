@@ -2,16 +2,13 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import { useState } from 'react'
-import { useNavigate } from "react-router-dom";
 
-function DateSearchBar() {
-    const navigate = useNavigate();
-    const [dateValue, setDateValue] = useState("");
+function DateSearchBar({handleSearch, date}) {
+    const [dateValue, setDateValue] = useState(date);
 
     const handleSubmit = (event) => {
-        // event.preventDefault();
-        // navigate(`/date/${dateValue}`)
-        console.log(event);
+        event.preventDefault();
+        handleSearch({date: dateValue})
     }
 
     const handleSelect = (event) => {

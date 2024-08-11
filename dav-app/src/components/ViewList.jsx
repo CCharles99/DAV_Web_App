@@ -1,23 +1,19 @@
 import React, { useRef, useState } from 'react';
-import data from '../data/ViewData.json'
 
-function ViewList({handleJump, setFreeCam, handleView}) {
+function ViewList({handleSearch, viewData}) {
 
-    const [viewData, setViewData] = useState(data);
     return (
         <div>
             {viewData.map(view => (
                 <div className='bookmark--container'>
                     <button
                         onClick={() => {
-                            handleJump(view.center, view.zoom);
-                            setFreeCam(false);
-                            handleView({symbol: view.symbol, bounds: view.bounds})
+                            handleSearch({lng: view.center.lng, lat: view.center.lat, zoom: view.zoom, view: view.symbol, freeCam: false});
                         }}
                     >{view.name}</button>
                 </div>
             ))}
-            <button onClick={() => setFreeCam(true)}>Free Mode</button>
+            <button onClick={() => handleSearch({freeCam: true})}>Free Mode</button>
         </div>
     );
 }
