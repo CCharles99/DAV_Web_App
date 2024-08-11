@@ -10,7 +10,7 @@ function BookmarkList({handleSearch, lng, lat, zoom, view}) {
             lng: bookmarkLng,
             lat: bookmarkLat,
             zoom: bookmarkZoom,
-            view: bookmarkView
+            view: `${bookmarkView}-b${bookmarkCount}`
         }
         setBookmarkList([...bookmarkList, newBookmark]);
         setBookmarkCount(bookmarkCount + 1);
@@ -34,7 +34,7 @@ function BookmarkList({handleSearch, lng, lat, zoom, view}) {
                     <button onClick={() => handleDelete(bookmark.name)}>del</button>
                 </div>
             ))}
-            <button onClick={() => addBookmark(lng, lat, zoom, view)}>add bookmark</button>
+            <button onClick={() => addBookmark(lng, lat, zoom, view.split('-')[0])}>add bookmark</button>
         </div>
     );
 }

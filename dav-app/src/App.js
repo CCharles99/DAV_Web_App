@@ -51,7 +51,7 @@ function App() {
               lng={searchParams.get("lng") || viewData[0].center.lng}
               zoom={searchParams.get("zoom") || viewData[0].zoom}
               view={searchParams.get("view") || viewData[0].symbol}
-              viewBounds={searchParams.has("view") ? viewData.find((view) => view.symbol === searchParams.get("view")).bounds : viewData[0].bounds}
+              viewBounds={searchParams.has("view") ? viewData.find((view) => view.symbol === searchParams.get("view").split('-')[0]).bounds : viewData[0].bounds}
               freeCam={JSON.parse(searchParams.get("freeCam")) || false}
               handleSearch={handleSearch}
             />

@@ -2,9 +2,10 @@ const fs = require('fs')
 const express = require('express');
 const router = express.Router();
 
-router.route('/:type/:view/:date/:index').get( (req, res) => {
+router.route('/:type/:view/:datetime').get( (req, res) => {
     try {
-        fs.readFile(`./images/${req.params.type}/${req.params.view}/${req.params.date}_${req.params.index}.png`, (err, imageData) => {
+        let month = req.params.datetime.slice(5,7)
+        fs.readFile(`./images/${req.params.type}/${req.params.view}/${month}/${req.params.datetime}.png`, (err, imageData) => {
             res.status(200).send(imageData);
         });
 

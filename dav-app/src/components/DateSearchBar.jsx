@@ -22,8 +22,8 @@ function DateSearchBar({handleSearch, date}) {
                     onChange={handleSelect}
                     type="date" name="date"
                     value={dateValue}
-                    min="2022-09-20"
-                    max="2022-09-24"
+                    min="2022-09-01"
+                    max="2022-09-30"
                 />
                 <Button variant="outline-secondary" id="button-addon2" type="submit">
                     Go

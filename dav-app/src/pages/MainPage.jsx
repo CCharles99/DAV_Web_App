@@ -26,7 +26,7 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
   const [frame, setFrame] = useState(1);
 
   const BASE_URL = 'http://localhost:5000/image/';
-  const URL_PARAMS = `/${view}/${date}/${frame}`;
+  const URL_PARAMS = `/${view.split('-')[0]}/${date} ${String(Math.floor(frame * 30 / 60)).padStart(2, '0')}-${String(frame * 30 % 60).padStart(2, '0')}-00`;
 
   const togglePlay = () => {
     if (timer.current) {
@@ -138,7 +138,7 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
     visibility = showLayer ? 'visible' : 'none'
     map.current.setLayoutProperty(layerID, 'visibility', visibility);
   }
-
+  
   useEffect(() => {
     if (freeCam) {
       // enable zoom
