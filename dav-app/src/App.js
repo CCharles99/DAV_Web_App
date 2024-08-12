@@ -62,38 +62,7 @@ function App() {
   )
 };
 
-
 export default App;
-
-
-/*
-<navbar>
-  <title>
-  <searchbar>
-    <search by name>
-    <search location>
-  <date form>
-  <about>
-<sidepanel>
-  <Accordion>
-    <item: basin>
-      <title>
-      <list>
-        <basins>
-    <item: bookmark>
-      <title>
-      <scrollable list>
-        <bookmarks>
-      <add bookmark button>
-<map container>
-  <map>
-  <playbar>
-  <toggle box>
-    <list>
-      <toggleables>
-
-
-*/
 
 /*
 TODO:
@@ -102,5 +71,5 @@ TODO:
   - make links from main page to cyclone page
   - do cyclone search bar
   - do cyclone icons
-  
+
 **/

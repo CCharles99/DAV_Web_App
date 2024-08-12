@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import AccordianGroup from '../components/AccordionGroup';
 import AccordionItem from '../components/AccodionItem';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import Map from '../components/Map';
 import ViewList from '../components/ViewList';
 import BookmarkList from '../components/BookmarkList';
 import LayerToggle from '../components/LayerToggle';
+import PlayBar from '../components/PlayBar';
 
 import viewData from '../data/ViewData.json';
 
@@ -23,27 +22,14 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
   const mapLoaded = useRef(false); // map.loaded() doesn't work as expected
 
   const MAP_BOUNDS = [[-360, -40], [360, 40]]  // [[west, south],[east, north]]
-
-  const timer = useRef(null);
+  const NUM_FRAMES = 48;
   const [frame, setFrame] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const [centerZoomState, setCenterZoomState] = useState({ lat: lat, lng: lng, zoom: zoom });
 
   const BASE_URL_IM = 'http://localhost:5000/image/';
   const URL_PARAMS = `/${view.split('-')[0]}/${date.slice(5, 7)}/${date} ${String(Math.floor(frame * 30 / 60)).padStart(2, '0')}-${String(frame * 30 % 60).padStart(2, '0')}-00`;
-
-  const togglePlay = () => {
-    if (timer.current) {
-      clearInterval(timer.current);
-      timer.current = null;
-    } else {
-      timer.current = setInterval(() => {
-        setFrame((frame) => {
-          return (frame >= 47) ? 0 : frame + 1;
-        });
-      }, 100)
-    }
-  }
 
   useEffect(() => {
     handleSearch({ lng: centerZoomState.lng, lat: centerZoomState.lat, zoom: centerZoomState.zoom });
@@ -51,14 +37,14 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
 
   useEffect(() => {
     if (!mapLoaded.current) return;
-    if (timer.current) { togglePlay() }
+    if (isPlaying) { setIsPlaying(false) }
     axios.head(BASE_URL_IM + 'DAV' + URL_PARAMS)
       .then(() => {
         map.current.setPaintProperty('dav-layer', 'raster-opacity', 0);
         map.current.setPaintProperty('ir-layer', 'raster-opacity', 0);
         setTimeout(() => {
           setFrame(0);
-          togglePlay();
+          setIsPlaying(true);
           setSourceImage('DAV');
           setSourceImage('IR');
           map.current.setPaintProperty('dav-layer', 'raster-opacity', 0.5);
@@ -66,7 +52,7 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
         }, 500);
       })
       .catch(err => {
-        console.log(err, 'ehe')
+        console.log(err)
       });
   }, [date]);
 
@@ -107,9 +93,6 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
     }
   }, [freeCam]);
 
-  const handleSlider = (event) => {
-    setFrame(parseInt(event.target.value));
-  }
 
   useEffect(() => {
     if (!mapLoaded.current) return;
@@ -139,10 +122,7 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
         setCenterZoomState={setCenterZoomState}
         setSourceImage={setSourceImage}
       />
-      <div className='play-bar'>
-        <Button style={{ backgroundColor: "purple" }} onClick={togglePlay}>Pause/Play</Button>
-        <Form.Range value={frame} min={0} max={47} onChange={handleSlider} />
-      </div>
+      <PlayBar NUM_FRAMES={NUM_FRAMES} frame={frame} setFrame={setFrame} isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
       <AccordianGroup
       />
       <AccordianGroup defaultActiveKeys={["0", "1", "2"]} >
