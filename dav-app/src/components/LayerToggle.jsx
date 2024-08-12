@@ -2,7 +2,7 @@ import React, { useState, useEffect} from 'react';
 import Form from 'react-bootstrap/Form';
 
 
-function LayerToggle({ mapLoaded, toggleVisibility, setSourceImage, frame, view }) {
+function LayerToggle({ mapLoaded, toggleVisibility, setSourceImage, frame }) {
 
     const [showDAV, setShowDAV] = useState(true);
     const [showIR, setShowIR] = useState(true);
@@ -26,7 +26,7 @@ function LayerToggle({ mapLoaded, toggleVisibility, setSourceImage, frame, view 
             if (showDAV) { setSourceImage('DAV') };
             if (showIR) { setSourceImage('IR') };
         }
-    }, [frame, view, showDAV, showIR]);
+    }, [frame, showDAV, showIR]);
 
     return (
         <Form>

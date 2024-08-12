@@ -22,8 +22,6 @@ function App() {
   const handleSearch = (newParams) => {
     setSearchParams((prevParams) => {
       prevParams = Object.fromEntries(prevParams.entries());
-      console.log(prevParams);
-      console.log(newParams);
       return new URLSearchParams({
         ...prevParams,
         ...newParams,
@@ -58,6 +56,7 @@ function App() {
           }
         />
         <Route path="/test/:id" element={<Test />} />
+        {/* <Route path="/cyclone/:tcid" element={<CyclonePage />} /> */}
       </Routes>
     </>
   )
@@ -98,8 +97,10 @@ export default App;
 
 /*
 TODO:
-  - separate {view.symbol, view.bounds} into view and viewBounds.
-  - do useSearchParams for date, center, zoom, view, freeCam. This should make bookmarking the date easier and a bunch of handlers can be removed maybe
-  - create cyclone list, search bar and page
-  - 
+  - extract Play Bar
+  - make cyclone Page
+  - make links from main page to cyclone page
+  - do cyclone search bar
+  - do cyclone icons
+  
 **/

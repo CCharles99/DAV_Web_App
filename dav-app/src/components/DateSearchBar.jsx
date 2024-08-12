@@ -1,11 +1,10 @@
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 function DateSearchBar({handleSearch, date}) {
     const [dateValue, setDateValue] = useState(date);
-
     const handleSubmit = (event) => {
         event.preventDefault();
         handleSearch({date: dateValue})
@@ -15,6 +14,10 @@ function DateSearchBar({handleSearch, date}) {
         setDateValue(event.target.value);
     }
 
+    useEffect(() => {
+        setDateValue(date);
+    }, [date])
+
     return (
         <Form onSubmit={handleSubmit}>
             <InputGroup className="mb-3">
@@ -22,7 +25,7 @@ function DateSearchBar({handleSearch, date}) {
                     onChange={handleSelect}
                     type="date" name="date"
                     value={dateValue}
-                    min="2022-09-01"
+                    min="2022-08-01"
                     max="2022-09-30"
                 />
                 <Button variant="outline-secondary" id="button-addon2" type="submit">
