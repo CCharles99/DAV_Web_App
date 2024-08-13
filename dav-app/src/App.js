@@ -1,8 +1,8 @@
 import './App.css';
-import { useEffect, useState } from 'react';
 import { Routes, Route, useSearchParams, useParams } from 'react-router-dom';
 import Navbar from 'react-bootstrap/Navbar';
 import MainPage from './pages/MainPage';
+import CyclonePage from './pages/CyclonePage';
 import DateSearchBar from './components/DateSearchBar'
 import viewData from './data/ViewData.json';
 
@@ -56,7 +56,7 @@ function App() {
           }
         />
         <Route path="/test/:id" element={<Test />} />
-        {/* <Route path="/cyclone/:tcid" element={<CyclonePage />} /> */}
+        <Route path="/cyclone/:tcID/:tcName" element={<CyclonePage />} />
       </Routes>
     </>
   )

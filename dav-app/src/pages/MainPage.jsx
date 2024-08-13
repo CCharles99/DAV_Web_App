@@ -10,12 +10,6 @@ import PlayBar from '../components/PlayBar';
 
 import viewData from '../data/ViewData.json';
 
-// axios.get(`http://localhost:5000/tc/byID/13196`)
-//   .then(res => console.log(res.data));
-
-// axios.get(`http://localhost:5000/tc/byDate/2022-09-23`)
-//   .then(res => console.log(res.data));
-
 
 function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCam }) {
   const map = useRef(null);
@@ -30,6 +24,25 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
 
   const BASE_URL_IM = 'http://localhost:5000/image/';
   const URL_PARAMS = `/${view.split('-')[0]}/${date.slice(5, 7)}/${date} ${String(Math.floor(frame * 30 / 60)).padStart(2, '0')}-${String(frame * 30 % 60).padStart(2, '0')}-00`;
+
+  useEffect(() => {
+    axios.get(`http://localhost:5000/tc/byDate/${date}`)
+      .then(res => console.log(res.data));
+
+    map.current.on('load', () => {
+      map.current.setMaxBounds(MAP_BOUNDS);
+      setSourceImage('DAV');
+      setSourceImage('IR');
+
+      map.current.on('dragend', () => {
+        setCenterZoomState({ lng: map.current.getCenter().lng.toFixed(4), lat: map.current.getCenter().lat.toFixed(4), zoom: map.current.getZoom().toFixed(2) });
+      });
+
+      map.current.on('zoomend', () => {
+        setCenterZoomState({ lng: map.current.getCenter().lng.toFixed(4), lat: map.current.getCenter().lat.toFixed(4), zoom: map.current.getZoom().toFixed(2) });
+      })
+    })
+  }, [])
 
   useEffect(() => {
     handleSearch({ lng: centerZoomState.lng, lat: centerZoomState.lat, zoom: centerZoomState.zoom });
@@ -114,15 +127,12 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
       <Map
         map={map}
         mapLoaded={mapLoaded}
-        MAP_BOUNDS={MAP_BOUNDS}
         viewBounds={viewBounds}
         lat={lat}
         lng={lng}
         zoom={zoom}
-        setCenterZoomState={setCenterZoomState}
-        setSourceImage={setSourceImage}
       />
-      <PlayBar NUM_FRAMES={NUM_FRAMES} frame={frame} setFrame={setFrame} isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+      <PlayBar num_frames={NUM_FRAMES} frame={frame} setFrame={setFrame} isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
       <AccordianGroup
       />
       <AccordianGroup defaultActiveKeys={["0", "1", "2"]} >

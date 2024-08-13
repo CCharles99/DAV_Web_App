@@ -4,7 +4,7 @@ import mapboxgl from 'mapbox-gl';
 mapboxgl.accessToken = 'pk.eyJ1IjoiY2NoYTAwNTciLCJhIjoiY2swOWZ5ODVwMDhjYTNjbnljN3Z5MXI4ayJ9._ibGMEIebSWPwmIEbUHc6A';
 
 
-function Map({ map, mapLoaded, MAP_BOUNDS, viewBounds, lat, lng, zoom, setSourceImage, setCenterZoomState }) {
+function Map({ map, mapLoaded, viewBounds, lat, lng, zoom }) {
     const mapContainer = useRef(null);
 
     useEffect(() => {
@@ -17,11 +17,9 @@ function Map({ map, mapLoaded, MAP_BOUNDS, viewBounds, lat, lng, zoom, setSource
             zoom: zoom,
             projection: 'equirectangular',
             maxPitch: 0,
-            maxBounds: MAP_BOUNDS,
         });
 
         map.current.on('load', () => {
-            console.log(viewBounds)
 
             // initialise Infrared layer
             map.current.addSource('IR', {
@@ -49,20 +47,11 @@ function Map({ map, mapLoaded, MAP_BOUNDS, viewBounds, lat, lng, zoom, setSource
             }
             ).setPaintProperty('dav-layer', 'raster-opacity', 0.5);
 
-            setSourceImage('DAV');
-            setSourceImage('IR');
-
             // updates state variables when map state changes
-            map.current.on('dragend', () => {
-                setCenterZoomState({ lng: map.current.getCenter().lng.toFixed(4), lat: map.current.getCenter().lat.toFixed(4), zoom: map.current.getZoom().toFixed(2) });
-            });
-
-            map.current.on('zoomend', () => {
-                setCenterZoomState({ lng: map.current.getCenter().lng.toFixed(4), lat: map.current.getCenter().lat.toFixed(4), zoom: map.current.getZoom().toFixed(2) });
-            })
 
             map.current.on('click', (e) => {
                 console.log(e.lngLat);
+                console.log(map.current.getZoom())
             })
 
             // disable rotation & keyboard controls
