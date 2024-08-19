@@ -5,6 +5,7 @@ import MainPage from './pages/MainPage';
 import CyclonePage from './pages/CyclonePage';
 import DateSearchBar from './components/DateSearchBar'
 import viewData from './data/ViewData.json';
+import React, { useState } from 'react';
 
 
 function Test() {
@@ -18,6 +19,7 @@ function Test() {
 
 function App() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [date, setDate] = useState(searchParams.get("date") || '2022-09-23');
 
   const handleSearch = (newParams) => {
     setSearchParams((prevParams) => {
@@ -27,6 +29,8 @@ function App() {
         ...newParams,
       });
     });
+    if (Object.hasOwn(newParams, 'date')) { setDate(newParams.date)}
+
   }
 
   return (
@@ -35,7 +39,7 @@ function App() {
         <div className='navbar-container'>
           <Navbar.Brand hState='#'>DAV App</Navbar.Brand>
           <div className='datesearchbar--container'>
-            <DateSearchBar date={searchParams.get("date")} handleSearch={handleSearch} />
+            <DateSearchBar date={date} handleSearch={handleSearch} />
           </div>
         </div>
       </Navbar>
@@ -44,7 +48,7 @@ function App() {
           path="/"
           element={
             <MainPage
-              date={searchParams.get("date") || "2022-09-23"}
+              date={date}
               lat={searchParams.get("lat") || viewData[0].center.lat}
               lng={searchParams.get("lng") || viewData[0].center.lng}
               zoom={searchParams.get("zoom") || viewData[0].zoom}
@@ -56,7 +60,7 @@ function App() {
           }
         />
         <Route path="/test/:id" element={<Test />} />
-        <Route path="/cyclone/:tcID/:tcName" element={<CyclonePage />} />
+        <Route path="/cyclone/:tcID/:tcName" element={<CyclonePage setDate={setDate}/>} />
       </Routes>
     </>
   )
@@ -66,10 +70,10 @@ export default App;
 
 /*
 TODO:
-  - extract Play Bar
-  - make cyclone Page
-  - make links from main page to cyclone page
   - do cyclone search bar
   - do cyclone icons
-
+  - do cyclone tracks
+    - colorcoded by basin
+    - 
+  - 
 **/

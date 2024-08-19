@@ -4,7 +4,7 @@ import mapboxgl from 'mapbox-gl';
 mapboxgl.accessToken = 'pk.eyJ1IjoiY2NoYTAwNTciLCJhIjoiY2swOWZ5ODVwMDhjYTNjbnljN3Z5MXI4ayJ9._ibGMEIebSWPwmIEbUHc6A';
 
 
-function Map({ map, mapLoaded, viewBounds, lat, lng, zoom }) {
+function Map({ map, setMapLoaded, viewBounds, lat, lng, zoom }) {
     const mapContainer = useRef(null);
 
     useEffect(() => {
@@ -12,6 +12,7 @@ function Map({ map, mapLoaded, viewBounds, lat, lng, zoom }) {
         // initialise map
         if (map.current) return;
         map.current = new mapboxgl.Map({
+            style: 'mapbox://styles/ccha0057/clzza1y1e005u01oe50t28thz',
             container: mapContainer.current,
             center: { lat: lat, lng: lng },
             zoom: zoom,
@@ -25,27 +26,31 @@ function Map({ map, mapLoaded, viewBounds, lat, lng, zoom }) {
             map.current.addSource('IR', {
                 'type': 'image',
                 'coordinates': viewBounds
-            }
-            ).addLayer({
+            }).addLayer({
                 id: 'ir-layer',
+                'slot': 'bottom',
                 'type': 'raster',
                 'source': 'IR',
-                'paint': { 'raster-fade-duration': 0 }
-            }
-            ).setPaintProperty('ir-layer', 'raster-opacity', 0.9);
+                'paint': {
+                    'raster-fade-duration': 0,
+                    'raster-opacity': 0.7
+                }
+            });
 
             // initialise DAV layer
             map.current.addSource('DAV', {
                 'type': 'image',
                 'coordinates': viewBounds
-            }
-            ).addLayer({
+            }).addLayer({
                 id: 'dav-layer',
+                'slot': 'bottom',
                 'type': 'raster',
                 'source': 'DAV',
-                'paint': { 'raster-fade-duration': 0 }
-            }
-            ).setPaintProperty('dav-layer', 'raster-opacity', 0.5);
+                'paint': {
+                    'raster-fade-duration': 0,
+                    'raster-opacity': 0.6
+                }
+            });
 
             // updates state variables when map state changes
 
@@ -58,7 +63,7 @@ function Map({ map, mapLoaded, viewBounds, lat, lng, zoom }) {
             map.current.dragRotate.disable();
             map.current.touchZoomRotate.disableRotation();
             map.current.keyboard.disable();
-            mapLoaded.current = true;
+            setMapLoaded(true);
         });
     }, []);
 

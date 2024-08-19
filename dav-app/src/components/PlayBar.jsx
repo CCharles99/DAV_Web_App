@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
-function PlayBar({num_frames, frame, setFrame, isPlaying, setIsPlaying}) {
+function PlayBar({numFrames, frame, setFrame, isPlaying, setIsPlaying, time }) {
 
   const timer = useRef(null);
 
@@ -14,9 +14,9 @@ function PlayBar({num_frames, frame, setFrame, isPlaying, setIsPlaying}) {
     if (isPlaying) {
       timer.current = setInterval(() => {
         setFrame((frame) => {
-          return (frame < num_frames - 1) ? frame + 1 : 0;
+          return (frame < numFrames - 1) ? frame + 1 : 0;
         });
-      }, 50)
+      }, 100)
     } else {
       clearInterval(timer.current);
       timer.current = null;
@@ -30,7 +30,8 @@ function PlayBar({num_frames, frame, setFrame, isPlaying, setIsPlaying}) {
   return (
     <div className='play-bar'>
       <Button style={{ backgroundColor: "purple" }} onClick={() => setIsPlaying(isPlaying => !isPlaying)}>Pause/Play</Button>
-      <Form.Range value={frame} min={0} max={num_frames-1} onChange={handleSlider} />
+      <Form.Range value={frame} min={0} max={numFrames-1} onChange={handleSlider} />
+      <div style={{ backgroundColor: "white", width:"50px" }} >{time}</div>
     </div>
   )
 }

@@ -8,21 +8,21 @@ function LayerToggle({ mapLoaded, toggleVisibility, setSourceImage, frame }) {
     const [showIR, setShowIR] = useState(true);
 
     useEffect(() => {
-        if (!mapLoaded.current) return;
+        if (!mapLoaded) return;
         setTimeout(() => {
             toggleVisibility('dav-layer', showDAV)
           }, 100);
     }, [showDAV])
 
     useEffect(() => {
-        if (!mapLoaded.current) return;
+        if (!mapLoaded) return;
         setTimeout(() => {
             toggleVisibility('ir-layer', showIR)
         }, 100);
     }, [showIR]);
 
     useEffect(() => {
-        if (mapLoaded.current) {
+        if (mapLoaded) {
             if (showDAV) { setSourceImage('DAV') };
             if (showIR) { setSourceImage('IR') };
         }

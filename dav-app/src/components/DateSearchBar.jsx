@@ -2,16 +2,24 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function DateSearchBar({handleSearch, date}) {
+    const location = useLocation();
+    const navigate = useNavigate();
     const [dateValue, setDateValue] = useState(date);
     const handleSubmit = (event) => {
         event.preventDefault();
-        handleSearch({date: dateValue})
+        if (location.pathname !== '/') {
+            navigate(`/?${new URLSearchParams({date: dateValue})}`)
+        } else {
+            handleSearch({date: dateValue})
+        }
     }
 
     const handleSelect = (event) => {
         setDateValue(event.target.value);
+        console.log(event)
     }
 
     useEffect(() => {

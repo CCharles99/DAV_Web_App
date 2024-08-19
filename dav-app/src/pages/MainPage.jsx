@@ -7,13 +7,14 @@ import ViewList from '../components/ViewList';
 import BookmarkList from '../components/BookmarkList';
 import LayerToggle from '../components/LayerToggle';
 import PlayBar from '../components/PlayBar';
+import CycloneList from '../components/CycloneList';
 
 import viewData from '../data/ViewData.json';
 
 
 function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCam }) {
   const map = useRef(null);
-  const mapLoaded = useRef(false); // map.loaded() doesn't work as expected
+  const [mapLoaded, setMapLoaded] = useState(false); // map.loaded() doesn't work as expected
 
   const MAP_BOUNDS = [[-360, -40], [360, 40]]  // [[west, south],[east, north]]
   const NUM_FRAMES = 48;
@@ -26,8 +27,6 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
   const URL_PARAMS = `/${view.split('-')[0]}/${date.slice(5, 7)}/${date} ${String(Math.floor(frame * 30 / 60)).padStart(2, '0')}-${String(frame * 30 % 60).padStart(2, '0')}-00`;
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/tc/byDate/${date}`)
-      .then(res => console.log(res.data));
 
     map.current.on('load', () => {
       map.current.setMaxBounds(MAP_BOUNDS);
@@ -49,7 +48,7 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
   }, [centerZoomState])
 
   useEffect(() => {
-    if (!mapLoaded.current) return;
+    if (!mapLoaded) return;
     if (isPlaying) { setIsPlaying(false) }
     axios.head(BASE_URL_IM + 'DAV' + URL_PARAMS)
       .then(() => {
@@ -61,7 +60,7 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
           setSourceImage('DAV');
           setSourceImage('IR');
           map.current.setPaintProperty('dav-layer', 'raster-opacity', 0.5);
-          map.current.setPaintProperty('ir-layer', 'raster-opacity', 0.9);
+          map.current.setPaintProperty('ir-layer', 'raster-opacity', 0.7);
         }, 500);
       })
       .catch(err => {
@@ -108,34 +107,35 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
 
 
   useEffect(() => {
-    if (!mapLoaded.current) return;
+    if (!mapLoaded) return;
+    handleJump();
+    if (freeCam) return;
     map.current.setPaintProperty('dav-layer', 'raster-opacity', 0);
     map.current.setPaintProperty('ir-layer', 'raster-opacity', 0);
-    handleJump()
     setTimeout(() => {
       setSourceImage('DAV');
       setSourceImage('IR');
       map.current.getSource('DAV').setCoordinates(viewBounds);
       map.current.getSource('IR').setCoordinates(viewBounds);
       map.current.setPaintProperty('dav-layer', 'raster-opacity', 0.5);
-      map.current.setPaintProperty('ir-layer', 'raster-opacity', 0.9);
+      map.current.setPaintProperty('ir-layer', 'raster-opacity', 0.7);
     }, 300);
-  }, [view]);
+  }, [view, freeCam]);
 
   return (
     <body>
       <Map
         map={map}
-        mapLoaded={mapLoaded}
+        setMapLoaded={setMapLoaded}
         viewBounds={viewBounds}
         lat={lat}
         lng={lng}
         zoom={zoom}
       />
-      <PlayBar num_frames={NUM_FRAMES} frame={frame} setFrame={setFrame} isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+      <PlayBar numFrames={NUM_FRAMES} frame={frame} setFrame={setFrame} isPlaying={isPlaying} setIsPlaying={setIsPlaying} time={`${String(Math.floor(frame * 30 / 60)).padStart(2, '0')}-${String(frame * 30 % 60).padStart(2, '0')}`}/>
       <AccordianGroup
       />
-      <AccordianGroup defaultActiveKeys={["0", "1", "2"]} >
+      <AccordianGroup defaultActiveKeys={["2", "3"]} >
         <AccordionItem
           eventKey="0"
           header="Views"
@@ -167,6 +167,12 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
             setSourceImage={setSourceImage}
             frame={frame}
           />
+        </AccordionItem>
+        <AccordionItem
+          eventKey="3"
+          header="Cyclones"
+        >
+          <CycloneList date={date}/>
         </AccordionItem>
       </AccordianGroup>
     </body>
