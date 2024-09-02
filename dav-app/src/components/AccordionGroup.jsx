@@ -2,10 +2,10 @@ import React from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 import "../custom.css";
 
-function AccordionGroup({ children, defaultActiveKeys}) {
+function AccordionGroup({ children, defaultActiveKey}) {
   return (
     <div className='accordion-container'>
-      <Accordion defaultActiveKey={defaultActiveKeys} alwaysOpen bg
+      <Accordion defaultActiveKey={[defaultActiveKey]}
         className="bg-body-tertiary"
         data-bs-theme="dark">
           {children}

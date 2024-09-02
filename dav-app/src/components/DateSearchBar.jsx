@@ -19,7 +19,6 @@ function DateSearchBar({handleSearch, date}) {
 
     const handleSelect = (event) => {
         setDateValue(event.target.value);
-        console.log(event)
     }
 
     useEffect(() => {

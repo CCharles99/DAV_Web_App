@@ -1,32 +1,29 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 
 
-function LayerToggle({ mapLoaded, toggleVisibility, setSourceImage, frame }) {
+function LayerToggle({ mapLoaded, toggleVisibility}) {
 
     const [showDAV, setShowDAV] = useState(true);
     const [showIR, setShowIR] = useState(true);
+    const [showIcons, setShowIcons] = useState(true);
 
     useEffect(() => {
         if (!mapLoaded) return;
-        setTimeout(() => {
-            toggleVisibility('dav-layer', showDAV)
-          }, 100);
+        toggleVisibility('dav-layer', showDAV)
     }, [showDAV])
 
     useEffect(() => {
         if (!mapLoaded) return;
-        setTimeout(() => {
-            toggleVisibility('ir-layer', showIR)
-        }, 100);
+        toggleVisibility('ir-layer', showIR)
     }, [showIR]);
 
     useEffect(() => {
-        if (mapLoaded) {
-            if (showDAV) { setSourceImage('DAV') };
-            if (showIR) { setSourceImage('IR') };
-        }
-    }, [frame, showDAV, showIR]);
+        if (!mapLoaded) return;
+        toggleVisibility('tc-icon-layer', showIcons)
+    }, [showIcons]);
+
+    
 
     return (
         <Form>
@@ -41,6 +38,12 @@ function LayerToggle({ mapLoaded, toggleVisibility, setSourceImage, frame }) {
                 label="Show IR"
                 checked={showIR}
                 onChange={() => setShowIR(show => !show)}
+            />
+            <Form.Check
+                type="checkbox"
+                label="Show Icons"
+                checked={showIcons}
+                onChange={() => setShowIcons(show => !show)}
             />
         </Form>
     );

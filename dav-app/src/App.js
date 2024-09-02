@@ -19,7 +19,7 @@ function Test() {
 
 function App() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [date, setDate] = useState(searchParams.get("date") || '2022-09-23');
+  // const [date, setDate] = useState(searchParams.get("date") || '2022-09-23');
 
   const handleSearch = (newParams) => {
     setSearchParams((prevParams) => {
@@ -29,7 +29,7 @@ function App() {
         ...newParams,
       });
     });
-    if (Object.hasOwn(newParams, 'date')) { setDate(newParams.date)}
+    // if (Object.hasOwn(newParams, 'date')) { setDate(newParams.date)}
 
   }
 
@@ -39,7 +39,7 @@ function App() {
         <div className='navbar-container'>
           <Navbar.Brand hState='#'>DAV App</Navbar.Brand>
           <div className='datesearchbar--container'>
-            <DateSearchBar date={date} handleSearch={handleSearch} />
+            <DateSearchBar date={searchParams.get("date") || '2022-09-23'} handleSearch={handleSearch} />
           </div>
         </div>
       </Navbar>
@@ -48,7 +48,7 @@ function App() {
           path="/"
           element={
             <MainPage
-              date={date}
+              date={searchParams.get("date") || '2022-09-23'}
               lat={searchParams.get("lat") || viewData[0].center.lat}
               lng={searchParams.get("lng") || viewData[0].center.lng}
               zoom={searchParams.get("zoom") || viewData[0].zoom}
@@ -60,7 +60,7 @@ function App() {
           }
         />
         <Route path="/test/:id" element={<Test />} />
-        <Route path="/cyclone/:tcID/:tcName" element={<CyclonePage setDate={setDate}/>} />
+        <Route path="/cyclone/:tcID/:tcName" element={<CyclonePage />} />
       </Routes>
     </>
   )
@@ -70,10 +70,19 @@ export default App;
 
 /*
 TODO:
-  - do cyclone search bar
-  - do cyclone icons
-  - do cyclone tracks
-    - colorcoded by basin
-    - 
+  - cyclones
+    - create searchbar
+    - add icons and tracks to cyclonepage
+    - add toggle for tracks
+  - icons
+    - show on page load
+    - make them clickable
+    - add name popup
+  - cyclone info card
+    - ask scott and liz which data to show
+    - graph of dav vs time
+      - use line graph with pointstyle that changes a circle to different a different time value with the frame
+      - have an api on page load that returns a list of DAV values at tc centres. (maybe add to gettcbyid)
+  - change apis to do tcList in one request
   - 
 **/

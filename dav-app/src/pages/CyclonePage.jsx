@@ -7,16 +7,12 @@ import Map from '../components/Map';
 import LayerToggle from '../components/LayerToggle';
 import PlayBar from '../components/PlayBar';
 
-/**
- * to fill the screen would be 26 east/west, 12 north/south
- */
-
 function CyclonePage({ setDate }) {
     const map = useRef(null);
     const [mapLoaded, setMapLoaded] = useState(false); // map.loaded() doesn't work as expected
 
     const { tcID, tcName } = useParams(); // 13200, IAN
-    const [tcData, setTcData] = useState();
+    const [tcData, setTcData] = useState(null);
     const ZOOM = 4.4;
     const [datetime, setDatetime] = useState();
 
@@ -24,71 +20,52 @@ function CyclonePage({ setDate }) {
     const [isPlaying, setIsPlaying] = useState(false);
 
     const BASE_URL_IM = 'http://localhost:5000/image/';
-    const URL_PARAMS = `/TC/${tcName}_${tcID}/${datetime}`;
+    const IMAGE_PARAMS = `/TC/${tcName}_${tcID}/${datetime}`;
+    const TRACK_PARAMS = `/id/${tcName}_${tcID}`;
 
     useEffect(() => {
-        axios.get(`http://localhost:5000/tc/byID/${tcID}`)
+        axios.get(`http://localhost:5000/tc/byID/${JSON.stringify([tcID.toString()])}`)
             .then(res => {
-                console.log(res.data);
-                // strip times of unusable values
-                let minValidIndex = res.data.time.findIndex(datetime => datetime.substring(5, 7) === '09');
-                let maxValidTimeIndex = res.data.time.findLastIndex(datetime => datetime.substring(5, 7) === '09');
-                // strip lats of unusable values
-                let maxValidLatIndex = res.data.center.findLastIndex(center => (Math.abs(center[1]) < 60));
-                let maxValidIndex = Math.min(maxValidTimeIndex, maxValidLatIndex);
-                setTcData({
-                    center: res.data.center.slice(minValidIndex, maxValidIndex),
-                    time: res.data.time.slice(minValidIndex, maxValidIndex),
-                    numFrames: maxValidIndex - minValidIndex
-                });
-                setDatetime(res.data.time[minValidIndex]);
+                let newTcData = res.data[0]
+                setTcData(newTcData);
+                setDatetime(newTcData.time[0]);
+                console.log(newTcData)
+            });
 
+        axios.get(`http://localhost:5000/tc/track_dav/${tcID}`)
+            .then(res => {
+                console.log(res.data)
             });
     }, []);
 
     useEffect(() => {
         if (!mapLoaded) return;
-        if (map.current.getSource('tcPath') != undefined) return;
 
-        map.current.addSource('tcPath', {
-            'type': 'geojson',
-            'data': {
-                'type': 'Feature',
-                'properties': {},
-                'geometry': {
-                    'type': 'MultiLineString',
-                    'coordinates': [tcData.center, [[0, 0], [60, 60]]]
-                }
-            }
+        map.current.addSource(tcName, {
+            'type': 'image',
+            'coordinates': [[-180, 60], [180, 60], [180, -60], [-180, -60]],
+            'url': BASE_URL_IM + 'track' + `/id/${tcName}_${tcID}`
         }).addLayer({
-            id: 'tcPath-layer',
+            id: tcID,
             'slot': 'middle',
-            'type': 'line',
-            'source': 'tcPath',
-            'layout': {
-                'line-join': 'round',
-            },
-            'paint': {
-                'line-dasharray': [1, 2],
-                'line-color': 'purple',
-                'line-width': 4
-            }
+            'type': 'raster',
+            'source': tcName,
         });
-        setSourceImage('DAV');
-        setSourceImage('IR');
-        updateStuff();
-        console.log(URL_PARAMS);
+
+        setSourceImage('DAV', IMAGE_PARAMS);
+        setSourceImage('IR', IMAGE_PARAMS);
+        updateBoundaries();
     }, [mapLoaded])
 
     useEffect(() => {
         if (!mapLoaded) return;
-        updateStuff();
+        updateBoundaries();
     }, [frame]);
 
-    const updateStuff = () => {
+    const updateBoundaries = () => {
 
         map.current.setCenter(tcData.center[frame]);
-        setDate(tcData.time[frame].slice(0, 10))
+        // setDate(tcData.time[frame].slice(0, 10))
         setDatetime(tcData.time[frame]);
         let center = tcData.center[frame];
         let north = (center[1] <= 50) ? center[1] + 10 : 60;
@@ -119,8 +96,15 @@ function CyclonePage({ setDate }) {
         map.current.getSource('IR').setCoordinates(IRViewBounds);
     }
 
+    useEffect(() => {
+        if (mapLoaded) {
+            setSourceImage('DAV');
+            setSourceImage('IR');
+        }
+    }, [frame]);
+
     const setSourceImage = (sourceID) => {
-        map.current.getSource(sourceID).updateImage({ url: BASE_URL_IM + sourceID + URL_PARAMS });
+        map.current.getSource(sourceID).updateImage({ url: BASE_URL_IM + sourceID + IMAGE_PARAMS });
     }
 
     const toggleVisibility = (layerID, showLayer) => {
@@ -141,11 +125,11 @@ function CyclonePage({ setDate }) {
                 lat={0}
                 lng={0}
                 zoom={ZOOM}
-            /> : ' '}
-            <PlayBar numFrames={tcData?.numFrames} frame={frame} setFrame={setFrame} isPlaying={isPlaying} setIsPlaying={setIsPlaying} time={datetime?.slice(11, 16)} />
+            /> : <></>}
+            <PlayBar numFrames={tcData ? tcData.time.length : 0} frame={frame} setFrame={setFrame} isPlaying={isPlaying} setIsPlaying={setIsPlaying} time={datetime?.slice(11, 16)} />
             <AccordianGroup
             />
-            <AccordianGroup defaultActiveKeys={["0"]} >
+            <AccordianGroup defaultActiveKey={"0"} >
                 <AccordionItem
                     eventKey="0"
                     header="Toggle Layers"
@@ -153,8 +137,6 @@ function CyclonePage({ setDate }) {
                     <LayerToggle
                         mapLoaded={mapLoaded}
                         toggleVisibility={toggleVisibility}
-                        setSourceImage={setSourceImage}
-                        frame={frame}
                     />
                 </AccordionItem>
             </AccordianGroup>

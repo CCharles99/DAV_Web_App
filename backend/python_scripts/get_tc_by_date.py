@@ -20,10 +20,10 @@ def main():
         time = f"{(i):02d}-00-00"
         tc_ids = tc_ids | set(reader.lookup_date(f"{date} {time}"))
 
-    result = dict()
+    result = []
     for tc_id in tc_ids:
-        tc_data = reader.read(tc_id)
-        result[tc_data["name"]] = tc_id
+        result.append({"id": str(tc_id), "name": reader.read(tc_id)["name"]})
+
     result = json.dumps(result)
     print(result)
 

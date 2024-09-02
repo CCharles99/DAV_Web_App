@@ -1,31 +1,32 @@
-import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Spinner from 'react-bootstrap/Spinner';
 
-function CycloneList({ date }) {
-  const [tcList, setTcList] = useState(null);
+function CycloneList({ tcList }) {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setTcList(null);
-    axios.get(`http://localhost:5000/tc/byDate/${date}`)
-      .then(res => setTcList(res.data));
-  }, [date])
-  return tcList ? (
+  const BASIN_COLORMAP = {
+    'NA': 'red',
+    'EP': 'yellow',
+    'WP': 'green'
+  }
+
+  return (tcList.length > 0) ? (
     <div>
-      {Object.entries(tcList).map(tc => (
+      {tcList.map(tc => (
         <div className='bookmark--container'>
-          <button
+          <button style={{ backgroundColor: BASIN_COLORMAP[tc.basin] }}
             onClick={() => {
-              let tcName = tc[0]
-              let tcID = tc[1]
-              navigate(`/cyclone/${tcID}/${tcName}`)
+              navigate(`/cyclone/${tc.id}/${tc.name}`)
             }}
-          >{tc[0]}</button>
+          >{tc.name}</button>
         </div>
       ))}
     </div>
-  ) : <></>;
+  ) :
+    <Spinner animation="border" role="status">
+      <span className="visually-hidden">Loading...</span>
+    </Spinner>;
 }
 
 export default CycloneList;
