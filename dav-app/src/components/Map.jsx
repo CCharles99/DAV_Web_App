@@ -2,8 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import mapboxgl from 'mapbox-gl';
 import tcIcon from '../assets/tc_icon.png'
+import tcIconMirror from '../assets/tc_icon_mirror.png'
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiY2NoYTAwNTciLCJhIjoiY2swOWZ5ODVwMDhjYTNjbnljN3Z5MXI4ayJ9._ibGMEIebSWPwmIEbUHc6A';
+mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 
 
 function Map({ map, setMapLoaded, viewBounds, lat, lng, zoom }) {
@@ -57,38 +58,54 @@ function Map({ map, setMapLoaded, viewBounds, lat, lng, zoom }) {
                 }
             });
 
-            // initialise Icon layer
+            // initialise Northern Hemisphere Icon layer
             map.current.loadImage(tcIcon,
                 (error, image) => {
                     if (error) throw error;
 
                     // Add the image to the map style.
-                    map.current.addImage('tc-icon', image, { sdf: true });
+                    map.current.addImage('tcn-icon', image, { sdf: true });
 
-                    map.current.addSource('tc-icon', {
+                    map.current.addSource('tcn-icon', {
                         'type': 'geojson',
                         'data': {
                             type: 'FeatureCollection',
                             features: []
                         }
                     }).addLayer({
-                        'id': 'tc-icon-layer',
+                        'id': 'tcn-icon-layer',
                         'type': 'symbol',
-                        'source': 'tc-icon',
+                        'source': 'tcn-icon',
                         'layout': {
-                            'icon-image': 'tc-icon',
+                            'icon-image': 'tcn-icon',
                             'icon-size': 0.25,
                             'icon-allow-overlap': true,
-                        },
-                        'paint': {
-                            'icon-color': 'black'
-                            // 'icon-color': [
-                            //     'match', ['get', 'basin'],
-                            //     'NA', 'red',
-                            //     'EP', 'yellow',
-                            //     'WP', 'green',
-                            //     'black'
-                            // ],
+                        }
+                    });
+                });
+
+            // initialise Southern Hemisphere Icon layer
+            map.current.loadImage(tcIconMirror,
+                (error, image) => {
+                    if (error) throw error;
+
+                    // Add the image to the map style.
+                    map.current.addImage('tcs-icon', image, { sdf: true });
+
+                    map.current.addSource('tcs-icon', {
+                        'type': 'geojson',
+                        'data': {
+                            type: 'FeatureCollection',
+                            features: []
+                        }
+                    }).addLayer({
+                        'id': 'tcs-icon-layer',
+                        'type': 'symbol',
+                        'source': 'tcs-icon',
+                        'layout': {
+                            'icon-image': 'tcs-icon',
+                            'icon-size': 0.25,
+                            'icon-allow-overlap': true,
                         }
                     });
                 });
@@ -98,7 +115,7 @@ function Map({ map, setMapLoaded, viewBounds, lat, lng, zoom }) {
                 closeOnClick: false
             });
 
-            map.current.on('mouseenter', 'tc-icon-layer', (e) => {
+            map.current.on('mouseenter', ['tcn-icon-layer', 'tcs-icon-layer'], (e) => {
                 // Change the cursor style as a UI indicator.
                 map.current.getCanvas().style.cursor = 'pointer';
 
@@ -120,14 +137,14 @@ function Map({ map, setMapLoaded, viewBounds, lat, lng, zoom }) {
                 popup.setLngLat(coordinates).setHTML(tcName).addTo(map.current);
             });
 
-            map.current.on('click', 'tc-icon-layer', (e) => {
+            map.current.on('click', ['tcn-icon-layer', 'tcs-icon-layer'], (e) => {
                 const tcName = e.features[0].properties.name;
                 const tcID = e.features[0].properties.id;
 
                 navigate(`/cyclone/${tcID}/${tcName}`)
             });
 
-            map.current.on('mouseleave', 'tc-icon-layer', () => {
+            map.current.on('mouseleave', ['tcn-icon-layer', 'tcs-icon-layer'], () => {
                 map.current.getCanvas().style.cursor = '';
                 popup.remove();
             });
