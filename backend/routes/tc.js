@@ -65,7 +65,17 @@ router.route('/byID/:tcID').get((req, res) => {
 });
 
 router.route('/track_dav/:tcID').get((req, res) => {
-    fs.readFile('./data/track_dav.json', 'utf-8', (err, data) => {
+    fs.readFile('./data/smooth_track_dav.json', 'utf-8', (err, data) => {
+        if (err) {
+            console.log(err);
+            res.status(400).send(err.message);
+        }
+        res.status(200).send(JSON.parse(data)[req.params.tcID])
+    });
+})
+
+router.route('/track_intensity/:tcID').get((req, res) => {
+    fs.readFile('./data/track_intensity.json', 'utf-8', (err, data) => {
         if (err) {
             console.log(err);
             res.status(400).send(err.message);

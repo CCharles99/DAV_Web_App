@@ -5,11 +5,11 @@ import axios from 'axios';
 import Map from '../components/Map';
 import ViewList from '../components/ViewList';
 import BookmarkList from '../components/BookmarkList';
-import LayerToggle from '../components/LayerToggle';
 import PlayBar from '../components/PlayBar';
 import CycloneList from '../components/CycloneList';
 
 import viewData from '../data/ViewData.json';
+import LayerToggleGroup from '../components/LayerToggleGroup';
 
 
 function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCam }) {
@@ -25,14 +25,12 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
 
   const [tcList, setTcList] = useState([]);
 
-  const BASE_URL_IM = 'http://localhost:5000/image/';
+  const BASE_URL_IM = process.env.REACT_APP_BASE_URL + 'image/';
   const IMAGE_PARAMS = `/${view.split('-')[0]}/${date.slice(5, 7)}/${date} ${String(Math.floor(frame * 30 / 60)).padStart(2, '0')}-${String(frame * 30 % 60).padStart(2, '0')}-00`;
-  // const TRACK_PARAMS = `/date/${date}`;
 
   useEffect(() => {
     if (!map.current) return;
     map.current.on('load', () => {
-      // map.current.setMaxBounds(MAP_BOUNDS);
       updateData();
 
       map.current.on('dragend', () => {
@@ -69,7 +67,8 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
       .then(() => {
         map.current.setPaintProperty('dav-layer', 'raster-opacity', 0);
         map.current.setPaintProperty('ir-layer', 'raster-opacity', 0);
-        map.current.setPaintProperty('tc-icon-layer', 'icon-opacity', 0);
+        map.current.setPaintProperty('tcn-icon-layer', 'icon-opacity', 0);
+        map.current.setPaintProperty('tcs-icon-layer', 'icon-opacity', 0);
 
         tcList.forEach(tc => {
           map.current.removeLayer(tc.id);
@@ -101,9 +100,10 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
             setSourceImage('IR');
             updateTcIconPositions(newTcList);
 
-            map.current.setPaintProperty('dav-layer', 'raster-opacity', 0.5);
+            map.current.setPaintProperty('dav-layer', 'raster-opacity', 0.6);
             map.current.setPaintProperty('ir-layer', 'raster-opacity', 0.7);
-            map.current.setPaintProperty('tc-icon-layer', 'icon-opacity', 1);
+            map.current.setPaintProperty('tcn-icon-layer', 'icon-opacity', 1);
+            map.current.setPaintProperty('tcs-icon-layer', 'icon-opacity', 1);
           });
       })
       .catch(err => {
@@ -113,10 +113,34 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
 
   const updateTcIconPositions = (tcList) => {
     if (tcList.length == 0) return;
-    map.current.setLayoutProperty('tc-icon-layer', 'icon-rotate', frame * 360 / 24);
-    map.current.getSource('tc-icon').setData({
+
+    // filter out tcs that don't have data for the current frame
+    tcList = tcList.filter(tc => (frame >= tc.minFrame) && (frame <= tc.maxFrame))
+
+    // update northern hemisphere icons
+    const northTcList = tcList.filter(tc => ["NI", "EP", "WP", "NA"].some((basin) => basin === tc.basin))
+    map.current.setLayoutProperty('tcn-icon-layer', 'icon-rotate', frame * -(360 / 24));
+    map.current.getSource('tcn-icon').setData({
       "type": "FeatureCollection",
-      "features": tcList.filter(tc => (frame >= tc.minFrame) && (frame <= tc.maxFrame)).map(tc => {
+      "features": northTcList.map(tc => {
+        return {
+          "id": tc.id,
+          "type": "Feature",
+          "properties": { "name": tc.name, "id": tc.id },
+          "geometry": {
+            "type": "Point",
+            "coordinates": tc.center[frame - tc.minFrame]
+          }
+        }
+      })
+    });
+
+    // update southern hemisphere icons
+    const southTcList = tcList.filter(tc => ["SI", "SP", "SA"].some((basin) => basin === tc.basin))
+    map.current.setLayoutProperty('tcs-icon-layer', 'icon-rotate', frame * 360 / 24);
+    map.current.getSource('tcs-icon').setData({
+      "type": "FeatureCollection",
+      "features": southTcList.map(tc => {
         return {
           "id": tc.id,
           "type": "Feature",
@@ -134,12 +158,18 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
     map.current.easeTo({ center: { lat: lat, lng: lng }, zoom: zoom, duration: 500 });
   }
 
-  const setSourceImage = (sourceID) => {
-    map.current.getSource(sourceID).updateImage({ url: BASE_URL_IM + sourceID + IMAGE_PARAMS });
+  const setSourceImage = async (sourceID) => {
+    await map.current.getSource(sourceID).updateImage({ url: BASE_URL_IM + sourceID + IMAGE_PARAMS });
+    await waitForLayers().then(() => console.log('done waiting'))
+    return;
   }
 
   const toggleVisibility = (layerID, showLayer) => {
     map.current.setLayoutProperty(layerID, 'visibility', showLayer ? 'visible' : 'none');
+  }
+
+  const imageLayersLoaded = () => {
+    return (map.current.isSourceLoaded('DAV') && map.current.isSourceLoaded('IR'));
   }
 
   useEffect(() => {
@@ -163,6 +193,19 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
     }
   }, [freeCam]);
 
+  const waitForLayers = () => {
+    return new Promise((resolve) => {
+      const wait = () => {
+        if (imageLayersLoaded()) {
+          resolve();
+        } else {
+          setTimeout(wait, 5);
+          console.log('oop')
+        }
+      }
+      wait();
+    });
+  }
 
   useEffect(() => {
     if (!mapLoaded) return;
@@ -190,7 +233,7 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
         lng={lng}
         zoom={zoom}
       />
-      <PlayBar numFrames={NUM_FRAMES} frame={frame} setFrame={setFrame} isPlaying={isPlaying} setIsPlaying={setIsPlaying} time={`${String(Math.floor(frame * 30 / 60)).padStart(2, '0')}-${String(frame * 30 % 60).padStart(2, '0')}`} />
+      <PlayBar imageLayersLoaded={imageLayersLoaded} numFrames={NUM_FRAMES} frame={frame} setFrame={setFrame} isPlaying={isPlaying} setIsPlaying={setIsPlaying} time={`${String(Math.floor(frame * 30 / 60)).padStart(2, '0')}-${String(frame * 30 % 60).padStart(2, '0')}`} />
       <AccordianGroup defaultActiveKey={"3"} >
         <AccordionItem
           eventKey="0"
@@ -217,9 +260,11 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds, freeCa
           eventKey="2"
           header="Toggle Layer"
         >
-          <LayerToggle
+          <LayerToggleGroup
             mapLoaded={mapLoaded}
             toggleVisibility={toggleVisibility}
+            layerIDLists={[['dav-layer'], ['ir-layer'], ['tcs-icon-layer', 'tcn-icon-layer'], tcList.map(tc => tc.id)]}
+            labels={['Show DAV', 'Show IR', 'Show Icons', 'Show Tracks']}
           />
         </AccordionItem>
         <AccordionItem

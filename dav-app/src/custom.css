@@ -23,6 +23,13 @@
     left: 2px;
 }
 
+.tcinfocard-container {
+    position: absolute;
+    top: 54px;
+    width: 400px;
+    right: 2px;
+}
+
 .datesearchbar--container {
     padding-top: 15px;
     padding-left: 160px;
