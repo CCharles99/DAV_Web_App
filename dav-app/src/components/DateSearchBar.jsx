@@ -10,6 +10,7 @@ function DateSearchBar({handleSearch, date}) {
     const [dateValue, setDateValue] = useState(date);
     const handleSubmit = (event) => {
         event.preventDefault();
+        if (dateValue === undefined) return;
         if (location.pathname !== '/') {
             navigate(`/?${new URLSearchParams({date: dateValue})}`)
         } else {
@@ -22,7 +23,7 @@ function DateSearchBar({handleSearch, date}) {
     }
 
     useEffect(() => {
-        setDateValue(date);
+        setDateValue(dateValue => date || dateValue);
     }, [date])
 
     return (

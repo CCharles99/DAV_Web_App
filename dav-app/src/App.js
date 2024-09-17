@@ -39,7 +39,7 @@ function App() {
         <div className='navbar-container'>
           <Navbar.Brand hState='#'>DAV App</Navbar.Brand>
           <div className='datesearchbar--container'>
-            <DateSearchBar date={searchParams.get("date") || '2022-09-23'} handleSearch={handleSearch} />
+            <DateSearchBar date={searchParams.get("date") || undefined} handleSearch={handleSearch} />
           </div>
         </div>
       </Navbar>
@@ -72,17 +72,14 @@ export default App;
 TODO:
   - cyclones
     - create searchbar
-    - add icons and tracks to cyclonepage
-    - add toggle for tracks
-  - icons
-    - show on page load
-    - make them clickable
-    - add name popup
   - cyclone info card
     - ask scott and liz which data to show
-    - graph of dav vs time
-      - use line graph with pointstyle that changes a circle to different a different time value with the frame
-      - have an api on page load that returns a list of DAV values at tc centres. (maybe add to gettcbyid)
-  - change apis to do tcList in one request
   - 
+
+  NEXT:
+  - time: 
+      - gmt for main page
+      - gmt and local for cyclone page
+  - land mask exclude dav. if possible include tc (cv2 for image resize)
+
 **/
