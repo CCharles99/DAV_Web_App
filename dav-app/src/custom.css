@@ -30,10 +30,10 @@
     right: 2px;
 }
 
-.datesearchbar--container {
-    padding-top: 15px;
+.datesearchbar-container {
     padding-left: 160px;
     display: flex;
+    padding-right: 15px;
 }
 
 .play-bar {

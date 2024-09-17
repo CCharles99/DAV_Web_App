@@ -4,8 +4,9 @@ import Navbar from 'react-bootstrap/Navbar';
 import MainPage from './pages/MainPage';
 import CyclonePage from './pages/CyclonePage';
 import DateSearchBar from './components/DateSearchBar'
+import CycloneSearchBar from './components/CycloneSearchBar'
 import viewData from './data/ViewData.json';
-import React, { useState } from 'react';
+import React from 'react';
 
 
 function Test() {
@@ -29,8 +30,6 @@ function App() {
         ...newParams,
       });
     });
-    // if (Object.hasOwn(newParams, 'date')) { setDate(newParams.date)}
-
   }
 
   return (
@@ -38,9 +37,8 @@ function App() {
       <Navbar className="bg-body-tertiary" data-bs-theme="dark">
         <div className='navbar-container'>
           <Navbar.Brand hState='#'>DAV App</Navbar.Brand>
-          <div className='datesearchbar--container'>
             <DateSearchBar date={searchParams.get("date") || undefined} handleSearch={handleSearch} />
-          </div>
+            <CycloneSearchBar/>
         </div>
       </Navbar>
       <Routes>

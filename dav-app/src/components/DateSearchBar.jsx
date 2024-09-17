@@ -1,5 +1,4 @@
 import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -27,8 +26,7 @@ function DateSearchBar({handleSearch, date}) {
     }, [date])
 
     return (
-        <Form onSubmit={handleSubmit}>
-            <InputGroup className="mb-3">
+        <Form onSubmit={handleSubmit} className='datesearchbar-container'>
                 <Form.Control
                     onChange={handleSelect}
                     type="date" name="date"
@@ -36,10 +34,9 @@ function DateSearchBar({handleSearch, date}) {
                     min="2022-09-01"
                     max="2022-09-30"
                 />
-                <Button variant="outline-secondary" id="button-addon2" type="submit">
+                <Button variant="outline-secondary" type="submit">
                     Go
                 </Button>
-            </InputGroup>
         </Form>
     );
 }

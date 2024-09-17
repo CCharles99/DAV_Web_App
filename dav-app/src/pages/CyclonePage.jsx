@@ -26,59 +26,82 @@ function CyclonePage() {
     const [isPlaying, setIsPlaying] = useState(false);
 
     const BASE_URL_IM = 'http://localhost:5000/image/';
-    const IMAGE_PARAMS = `/TC/${tcName}_${tcID}/${datetime}`;
-    // const TRACK_PARAMS = `/id/${tcName}_${tcID}`;
 
-    useEffect(() => {
-        axios.get(`http://localhost:5000/tc/byID/${JSON.stringify([tcID.toString()])}`)
+    const getData = async () => {
+        let tcData = await axios.get(`http://localhost:5000/tc/byID/${JSON.stringify([tcID.toString()])}`)
             .then(res => {
-                let newTcData = res.data[0]
-                setTcData(() => newTcData);
-                setDatetime(() => newTcData.time[0]);
+                let newTcData = res.data[0];
+                setTcData(() => tcData);
+                setDatetime(() => tcData.time[0]);
+                return newTcData;
             });
 
-        axios.get(`http://localhost:5000/tc/track_dav/${tcID}`)
+        await axios.get(`http://localhost:5000/tc/track_dav/${tcID}`)
             .then(res => {
                 setCenterDAV(() => res.data);
             });
 
-        axios.get(`http://localhost:5000/tc/track_intensity/${tcID}`)
+        await axios.get(`http://localhost:5000/tc/track_intensity/${tcID}`)
             .then(res => {
                 setCenterIntensity(() => res.data);
             });
+        return tcData;
+    }
 
-    }, []);
+    const waitForMap = () => {
+        return new Promise((resolve) => {
+          const wait = () => {
+            if (map.current?.loaded()) {
+              resolve();
+            } else {
+              setTimeout(wait, 100);
+            }
+          }
+          wait();
+        });
+      }
+
+    useEffect(() => {
+        getData().then((tcData) => {
+            waitForMap().then(() => {
+                let trackSource = map.current.getSource('tcTrack')
+                if (trackSource) {
+                    trackSource.updateImage({ url: BASE_URL_IM + 'track' + `/id/${tcName}_${tcID}` })
+                } else {
+                    map.current.addSource('tcTrack', {
+                        'type': 'image',
+                        'coordinates': [[-180, 60], [180, 60], [180, -60], [-180, -60]],
+                        'url': BASE_URL_IM + 'track' + `/id/${tcName}_${tcID}`
+                    }).addLayer({
+                        id: 'tcTrackLayer',
+                        'slot': 'middle',
+                        'type': 'raster',
+                        'source': 'tcTrack',
+                    });
+                }
+                setSourceImage('DAV', tcData.time[0]);
+                setSourceImage('IR', tcData.time[0]);
+                updateBoundaries(tcData);
+
+                if (isPlaying) { setIsPlaying(false) };
+                setFrame(0);
+                
+            })
+        })
+    }, [tcID])
 
     useEffect(() => {
         if (!mapLoaded) return;
-        if (map.current.getSource(tcName) === undefined) {
-            map.current.addSource(tcName, {
-                'type': 'image',
-                'coordinates': [[-180, 60], [180, 60], [180, -60], [-180, -60]],
-                'url': BASE_URL_IM + 'track' + `/id/${tcName}_${tcID}`
-            }).addLayer({
-                id: tcID,
-                'slot': 'middle',
-                'type': 'raster',
-                'source': tcName,
-            });
-        }
-
-        setSourceImage('DAV', IMAGE_PARAMS);
-        setSourceImage('IR', IMAGE_PARAMS);
-        updateBoundaries();
-    }, [mapLoaded])
-
-    useEffect(() => {
-        if (!mapLoaded) return;
-        updateBoundaries();
+        setSourceImage('DAV', tcData.time[frame]);
+        setSourceImage('IR', tcData.time[frame]);
+        updateBoundaries(tcData);
     }, [frame]);
 
     const imageLayersLoaded = () => {
         return (map.current.isSourceLoaded('DAV') && map.current.isSourceLoaded('IR'));
     }
 
-    const updateBoundaries = () => {
+    const updateBoundaries = (tcData) => {
 
         map.current.setCenter(tcData.center[frame]);
         setDatetime(tcData.time[frame]);
@@ -111,15 +134,8 @@ function CyclonePage() {
         map.current.getSource('IR').setCoordinates(IRViewBounds);
     }
 
-    useEffect(() => {
-        if (mapLoaded) {
-            setSourceImage('DAV');
-            setSourceImage('IR');
-        }
-    }, [frame]);
-
-    const setSourceImage = (sourceID) => {
-        map.current.getSource(sourceID).updateImage({ url: BASE_URL_IM + sourceID + IMAGE_PARAMS });
+    const setSourceImage = (sourceID, datetime) => {
+        map.current.getSource(sourceID).updateImage({ url: BASE_URL_IM + sourceID + `/TC/${tcName}_${tcID}/${datetime}`});
     }
 
     const toggleVisibility = (layerID, showLayer) => {
@@ -137,8 +153,8 @@ function CyclonePage() {
                     [1, -1],
                     [-1, -1]
                 ]}
-                lat={0}
-                lng={0}
+                lat={tcData.center[0][1]}
+                lng={tcData.center[0][0]}
                 zoom={ZOOM}
             /> : <></>}
             <PlayBar imageLayersLoaded={imageLayersLoaded} numFrames={tcData ? tcData.time.length : 0} frame={frame} setFrame={setFrame} isPlaying={isPlaying} setIsPlaying={setIsPlaying} time={datetime?.slice(11, 16)} />
