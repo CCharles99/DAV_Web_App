@@ -1,19 +1,25 @@
 .map-container {
-    height: 644px;
+    height: calc(100% - 54px);
     width: 100%;
+}
+
+.page {
+    height: 100vh;
 }
 
 .map {
     height: 100%;
+}
+
+body, html {
+    height: 100%;
     width: 100%;
 }
 
-.navbar-container {
-    padding-left: 20px;
+
+
+.datesearchbar-container {
     display: flex;
-    margin: 0;
-    height: 35px;
-    align-items: center;
 }
 
 .accordion-container {
@@ -30,17 +36,46 @@
     right: 2px;
 }
 
-.datesearchbar-container {
-    padding-left: 160px;
+.legend-container {
+    position: absolute;
+    bottom: 2.8%;
+    right: 2px;
+}
+
+.play-icon-container {
+    background-color: rgb(222, 226, 230);
+    border-radius: 100%;
+}
+
+.time {
+    text-wrap:nowrap;
+    overflow: hidden;
+    background-color: rgb(222, 226, 230);
+    padding: 2px;
+    border: 3px solid purple;
+    border-radius: 5px;
+    color: purple;
+    font-weight: bold;
+
+}
+
+.colorbar-container {
+    padding: 2px 10px 2px 4px;
     display: flex;
-    padding-right: 15px;
+    gap: 20px;
+    background-color: rgb(222, 226, 230);
+    border-radius: 4px
 }
 
 .play-bar {
-    top: 656px;
-    left: 100px;
-    right: 280px;
+    bottom: 2.8%;
+    left: 250px;
+    right: 250px;
     position: absolute;
     display: flex;
     align-items: center;
+}
+
+.slider {
+    accent-color: "rgb(229, 0, 229)";
 }

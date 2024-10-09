@@ -1,12 +1,13 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
 import LayerToggle from './LayerToggle';
+import { ListGroup } from 'react-bootstrap';
 
 
 function LayerToggleGroup({ mapLoaded, toggleVisibility, layerIDLists, labels }) {
 
   return (
-    <Form>
+    <ListGroup variant='flush' as={Form}>
       {layerIDLists.map((layerIDs, index) => {
         return (
           <LayerToggle
@@ -17,7 +18,7 @@ function LayerToggleGroup({ mapLoaded, toggleVisibility, layerIDLists, labels })
           />
         )
       })}
-    </Form>
+    </ListGroup>
   );
 }
 

@@ -27,67 +27,88 @@ function LineGraph({ centerDAV, centerIntensity, frame }) {
   }
 
   return (
-      <Line
-        data={{
-          labels: Array(centerDAV.length).fill(""),
-          datasets: [
-            {
-              label: 'DAV',
-              yAxisID: 'DAV',
-              data: centerDAV,
-              borderColor: CHART_COLORS.blue,
-              backgroundColor: colorLib(CHART_COLORS.blue).alpha(0.5).rgbString(),
-              pointBorderColor: CHART_COLORS.blue_white,
-              borderJoinStyle: 'bevel',
-              borderCapStyle: 'round'
+    <Line
+      data={{
+        labels: Array(centerDAV.length).fill(""),
+        datasets: [
+          {
+            label: 'DAV',
+            yAxisID: 'DAV',
+            data: centerDAV,
+            borderColor: CHART_COLORS.blue,
+            backgroundColor: colorLib(CHART_COLORS.blue).alpha(0.5).rgbString(),
+            pointBorderColor: CHART_COLORS.blue_white,
+            borderJoinStyle: 'bevel',
+            borderCapStyle: 'round'
+          },
+          {
+            label: 'Intensity',
+            yAxisID: 'Intensity',
+            data: centerIntensity,
+            borderColor: CHART_COLORS.red,
+            backgroundColor: colorLib(CHART_COLORS.red).alpha(0.5).rgbString(),
+            pointBorderColor: CHART_COLORS.red_white,
+            borderJoinStyle: 'bevel',
+            borderCapStyle: 'round'
+          },
+        ]
+      }}
+      options={{
+        animation: false,
+        elements: {
+          point: {
+            pointBorderWidth: 3,
+            pointStyle: circleAtFrame,
+            radius: 4,
+            hoverRadius: 4,
+          }
+        },
+        responsive: true,
+        interaction: {
+          mode: 'index',
+          intersect: false,
+        },
+        stacked: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+        },
+        scales: {
+          DAV: {
+            title: {
+              display: true,
+              text: 'DAV (deg\u00B2)',
+              color: CHART_COLORS.blue,
+              font: {
+                size: 15,
+              },
             },
-            {
-              label: 'Intensity',
-              yAxisID: 'Intensity',
-              data: centerIntensity,
-              borderColor: CHART_COLORS.red,
-              backgroundColor: colorLib(CHART_COLORS.red).alpha(0.5).rgbString(),
-              pointBorderColor: CHART_COLORS.red_white,
-              borderJoinStyle: 'bevel',
-              borderCapStyle: 'round'
-            },
-          ]
-        }}
-        options={{
-          animation: false,
-          elements: {
-            point: {
-              pointBorderWidth: 3,
-              pointStyle: circleAtFrame,
-              radius: 4,
-              hoverRadius: 4,
+            type: 'linear',
+            position: 'left',
+            min: 500,
+            max: 3500,
+            grid: {
+              drawOnChartArea: false,
             }
           },
-          responsive: true,
-          interaction: {
-            mode: 'index',
-            intersect: false,
+          Intensity: {
+            title: {
+              display: true,
+              text: 'Intensity (kts)',
+              color: CHART_COLORS.red,
+              font: {
+                size: 15,
+              },
+            },
+            type: 'linear',
+            position: 'right',
+            min: 20,
+            max: 160,
           },
-          stacked : false,
-          scales: {
-            DAV: {
-              type: 'linear',
-              position: 'left',
-              min: 500,
-              max: 3500,
-              grid: {
-                drawOnChartArea: false,
-              }
-            },
-            Intensity: {
-              type: 'linear',
-              position: 'right',
-              min: 0,
-              max: 150,
-            },
-          }
-        }}
-      />
+        }
+      }}
+    />
   );
 }
 

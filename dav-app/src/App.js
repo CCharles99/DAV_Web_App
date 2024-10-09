@@ -7,6 +7,7 @@ import DateSearchBar from './components/DateSearchBar'
 import CycloneSearchBar from './components/CycloneSearchBar'
 import viewData from './data/ViewData.json';
 import React from 'react';
+import { Col, Container} from 'react-bootstrap';
 
 
 function Test() {
@@ -21,7 +22,6 @@ function Test() {
 function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   // const [date, setDate] = useState(searchParams.get("date") || '2022-09-23');
-
   const handleSearch = (newParams) => {
     setSearchParams((prevParams) => {
       prevParams = Object.fromEntries(prevParams.entries());
@@ -33,13 +33,20 @@ function App() {
   }
 
   return (
-    <>
+    <div >
       <Navbar className="bg-body-tertiary" data-bs-theme="dark">
-        <div className='navbar-container'>
-          <Navbar.Brand hState='#'>DAV App</Navbar.Brand>
-            <DateSearchBar date={searchParams.get("date") || undefined} handleSearch={handleSearch} />
-            <CycloneSearchBar/>
-        </div>
+        <Container fluid>
+            <Col lg={1.5} sm={1.5} md={2}>
+              <Navbar.Brand>DAV App</Navbar.Brand>
+            </Col>
+            <Col xl={2}>
+              <DateSearchBar date={searchParams.get("date") || undefined} handleSearch={handleSearch} />
+            </Col>
+            <Col sm={3} >
+              <CycloneSearchBar />
+            </Col>
+            <Col lg={2}/>
+        </Container>
       </Navbar>
       <Routes>
         <Route
@@ -52,7 +59,6 @@ function App() {
               zoom={searchParams.get("zoom") || viewData[0].zoom}
               view={searchParams.get("view") || viewData[0].symbol}
               viewBounds={searchParams.has("view") ? viewData.find((view) => view.symbol === searchParams.get("view").split('-')[0]).bounds : viewData[0].bounds}
-              freeCam={JSON.parse(searchParams.get("freeCam")) || false}
               handleSearch={handleSearch}
             />
           }
@@ -60,24 +66,8 @@ function App() {
         <Route path="/test/:id" element={<Test />} />
         <Route path="/cyclone/:tcID/:tcName" element={<CyclonePage />} />
       </Routes>
-    </>
+    </div>
   )
 };
 
 export default App;
-
-/*
-TODO:
-  - cyclones
-    - create searchbar
-  - cyclone info card
-    - ask scott and liz which data to show
-  - 
-
-  NEXT:
-  - time: 
-      - gmt for main page
-      - gmt and local for cyclone page
-  - land mask exclude dav. if possible include tc (cv2 for image resize)
-
-**/

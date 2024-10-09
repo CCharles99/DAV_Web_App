@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import React, { useEffect, useRef, useState } from 'react';
 import AccordianGroup from '../components/AccordionGroup';
-import AccordionItem from '../components/AccodionItem';
+import AccordionItem from '../components/AccordionItem.jsx';
 import axios from 'axios';
 import Map from '../components/Map';
 import LayerToggleGroup from '../components/LayerToggleGroup';
@@ -9,6 +9,8 @@ import PlayBar from '../components/PlayBar';
 import TCInfoCard from '../components/TCInfoCard';
 import LineGraph from "../components/LineGraph";
 import Spinner from "react-bootstrap/Spinner";
+import useTimerStore from '../store/useTimerStore.js';
+import Legend from '../components/Legend.jsx'
 
 function CyclonePage() {
     const map = useRef();
@@ -20,10 +22,9 @@ function CyclonePage() {
     const [centerIntensity, setCenterIntensity] = useState();
 
     const ZOOM = 4.4;
-    const [datetime, setDatetime] = useState();
 
-    const [frame, setFrame] = useState(0);
-    const [isPlaying, setIsPlaying] = useState(false);
+    const { frame, stop, snap } = useTimerStore();
+    // const [datetime, setDatetime] = useState();
 
     const BASE_URL_IM = 'http://localhost:5000/image/';
 
@@ -32,7 +33,6 @@ function CyclonePage() {
             .then(res => {
                 let newTcData = res.data[0];
                 setTcData(() => tcData);
-                setDatetime(() => tcData.time[0]);
                 return newTcData;
             });
 
@@ -50,20 +50,21 @@ function CyclonePage() {
 
     const waitForMap = () => {
         return new Promise((resolve) => {
-          const wait = () => {
-            if (map.current?.loaded()) {
-              resolve();
-            } else {
-              setTimeout(wait, 100);
+            const wait = () => {
+                if (map.current?.loaded()) {
+                    resolve();
+                } else {
+                    setTimeout(wait, 100);
+                }
             }
-          }
-          wait();
+            wait();
         });
-      }
+    }
 
     useEffect(() => {
         getData().then((tcData) => {
             waitForMap().then(() => {
+                map.current.setZoom(ZOOM);
                 let trackSource = map.current.getSource('tcTrack')
                 if (trackSource) {
                     trackSource.updateImage({ url: BASE_URL_IM + 'track' + `/id/${tcName}_${tcID}` })
@@ -73,22 +74,28 @@ function CyclonePage() {
                         'coordinates': [[-180, 60], [180, 60], [180, -60], [-180, -60]],
                         'url': BASE_URL_IM + 'track' + `/id/${tcName}_${tcID}`
                     }).addLayer({
-                        id: 'tcTrackLayer',
+                        id: tcID,
                         'slot': 'middle',
                         'type': 'raster',
                         'source': 'tcTrack',
                     });
                 }
-                setSourceImage('DAV', tcData.time[0]);
-                setSourceImage('IR', tcData.time[0]);
+                setSourceImage('DAV', tcData.time[frame]);
+                setSourceImage('IR', tcData.time[frame]);
                 updateBoundaries(tcData);
-
-                if (isPlaying) { setIsPlaying(false) };
-                setFrame(0);
-                
-            })
-        })
+                snap(0);
+            });
+        });
+        return () => {
+            stop();
+        }
     }, [tcID])
+
+    useEffect(() => {
+        return () => {
+            snap(0);
+        }
+    }, []);
 
     useEffect(() => {
         if (!mapLoaded) return;
@@ -104,7 +111,6 @@ function CyclonePage() {
     const updateBoundaries = (tcData) => {
 
         map.current.setCenter(tcData.center[frame]);
-        setDatetime(tcData.time[frame]);
         let center = tcData.center[frame];
         let north = (center[1] <= 50) ? center[1] + 10 : 60;
         let south = (center[1] >= -50) ? center[1] - 10 : -60;
@@ -135,7 +141,7 @@ function CyclonePage() {
     }
 
     const setSourceImage = (sourceID, datetime) => {
-        map.current.getSource(sourceID).updateImage({ url: BASE_URL_IM + sourceID + `/TC/${tcName}_${tcID}/${datetime}`});
+        map.current.getSource(sourceID).updateImage({ url: BASE_URL_IM + sourceID + `/TC/${tcName}_${tcID}/${datetime}` });
     }
 
     const toggleVisibility = (layerID, showLayer) => {
@@ -143,21 +149,12 @@ function CyclonePage() {
     }
 
     return (
-        <body>
-            {(tcData) ? <Map
-                map={map}
-                setMapLoaded={setMapLoaded}
-                viewBounds={[
-                    [-1, 1],
-                    [1, 1],
-                    [1, -1],
-                    [-1, -1]
-                ]}
-                lat={tcData.center[0][1]}
-                lng={tcData.center[0][0]}
-                zoom={ZOOM}
-            /> : <></>}
-            <PlayBar imageLayersLoaded={imageLayersLoaded} numFrames={tcData ? tcData.time.length : 0} frame={frame} setFrame={setFrame} isPlaying={isPlaying} setIsPlaying={setIsPlaying} time={datetime?.slice(11, 16)} />
+        <div className="page">
+            {(tcData)
+                ? <Map map={map} setMapLoaded={setMapLoaded} />
+                : <></>
+            }
+            <PlayBar imageLayersLoaded={imageLayersLoaded} numFrames={tcData ? tcData.time.length : 0} time={tcData?.time[frame].slice(11, 16)} />
             <AccordianGroup
             />
             <AccordianGroup defaultActiveKey={"0"} >
@@ -182,7 +179,8 @@ function CyclonePage() {
                     </Spinner>
                 }
             </TCInfoCard>
-        </body>
+            <Legend/>
+        </div>
     );
 }
 

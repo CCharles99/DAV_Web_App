@@ -1,52 +1,39 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, FormControl, Button, ListGroup, Modal } from 'react-bootstrap';
 import tcRef from '../data/tcRef.json';
+import useDebounce from '../custom-hooks/useDebounce';
 
 function CycloneSearchBar() {
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [suggestions, setSuggestions] = useState(tcRef.map(tc => capitalizeFirstLetter(tc.name)));
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const [showModal, setShowModal] = useState(false);
-  const handleCloseModal = () => setShowModal(false);
 
   const navigate = useNavigate();
 
-  const debounce = (func, delay) => {
-    let timeoutId;
-    return (...args) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        func(...args);
-      }, delay);
-    };
-  };
-
-  const fetchSuggestions = useCallback(
-    debounce((term) => {
-      if (term.length > 0) {
+  useEffect(() => {
+      if (debouncedSearchTerm.length > 0) {
         let filteredSuggestions = [];
-        if (isName(term)) {
+        if (isName(debouncedSearchTerm)) {
           filteredSuggestions = tcRef.filter((suggestion) =>
-            suggestion.name.toLowerCase().startsWith(term.toLowerCase())
+            suggestion.name.toLowerCase().startsWith(debouncedSearchTerm.toLowerCase())
           );
-        } else if (isID(term)) {
+        } else if (isID(debouncedSearchTerm)) {
           filteredSuggestions = tcRef.filter((suggestion) =>
-            suggestion.id.startsWith(term)
+            suggestion.id.startsWith(debouncedSearchTerm)
           );
         }
         setSuggestions(filteredSuggestions.map((suggestion) => capitalizeFirstLetter(suggestion.name)));
       } else {
         setSuggestions(tcRef.map((suggestion) => capitalizeFirstLetter(suggestion.name)));
       }
-      setShowSuggestions(true);
-    }, 300), []
-  );
+  }, [debouncedSearchTerm]);
 
   const handleInputChange = (e) => {
     setSearchTerm(e.target.value);
-    fetchSuggestions(e.target.value);
   };
 
   const handleSearch = (e) => {
@@ -58,6 +45,7 @@ function CycloneSearchBar() {
       } else {
         navigate(`/cyclone/${tc.id}/${tc.name}`)
       }
+      setSearchTerm('');
     } else {
       setShowModal(true);
     }
@@ -65,8 +53,6 @@ function CycloneSearchBar() {
   // why is clicking search triggering handle focus
 
   const handleFocus = () => {
-    console.log(searchTerm)
-    console.log(suggestions)
     setShowSuggestions(true);
   };
 
@@ -98,7 +84,7 @@ function CycloneSearchBar() {
 
   return (
     <>
-      <Modal size="sm" data-bs-theme="dark" show={showModal} onHide={handleCloseModal} >
+      <Modal size="sm" data-bs-theme="dark" show={showModal} onHide={() => setShowModal(false)} >
         <Modal.Header closeButton style={{color: '#dee2e6'}}>
           <Modal.Title>Invalid Name</Modal.Title>
         </Modal.Header>
@@ -117,6 +103,7 @@ function CycloneSearchBar() {
             value={searchTerm}
             onChange={handleInputChange}
             onFocus={handleFocus}
+            style={{minWidth: '90px'}}
           />
           <Button variant="outline-secondary" type="submit">
             Search

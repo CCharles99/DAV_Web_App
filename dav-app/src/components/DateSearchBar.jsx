@@ -7,6 +7,7 @@ function DateSearchBar({handleSearch, date}) {
     const location = useLocation();
     const navigate = useNavigate();
     const [dateValue, setDateValue] = useState(date);
+    
     const handleSubmit = (event) => {
         event.preventDefault();
         if (dateValue === undefined) return;

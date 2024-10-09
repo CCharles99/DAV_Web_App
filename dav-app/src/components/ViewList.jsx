@@ -1,20 +1,16 @@
 import React from 'react';
+import { ListGroup, ListGroupItem } from 'react-bootstrap';
 
-function ViewList({handleSearch, viewData}) {
+function ViewList({ handleSearch, viewData, currentView }) {
 
     return (
-        <div>
+        <ListGroup variant="flush" >
             {viewData.map(view => (
-                <div className='bookmark--container'>
-                    <button
-                        onClick={() => {
-                            handleSearch({lng: view.center.lng, lat: view.center.lat, zoom: view.zoom, view: view.symbol, freeCam: false});
-                        }}
-                    >{view.name}</button>
-                </div>
+                <ListGroupItem style={(currentView === view.symbol) ? {paddingTop: '6px', paddingBottom: '6px', paddingLeft: '30px'} : {paddingTop: '6px', paddingBottom: '6px'}} action onClick={() => handleSearch({ lng: view.center.lng, lat: view.center.lat, zoom: view.zoom, view: view.symbol })}>
+                    {view.name}
+                </ListGroupItem>
             ))}
-            <button onClick={() => handleSearch({freeCam: true})}>Free Mode</button>
-        </div>
+        </ListGroup>
     );
 }
 

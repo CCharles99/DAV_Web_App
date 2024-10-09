@@ -7,7 +7,7 @@ import tcIconMirror from '../assets/tc_icon_mirror.png'
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 
 
-function Map({ map, setMapLoaded, viewBounds, lat, lng, zoom }) {
+function Map({ map, setMapLoaded }) {
     const mapContainer = useRef(null);
 
     const navigate = useNavigate();
@@ -19,8 +19,8 @@ function Map({ map, setMapLoaded, viewBounds, lat, lng, zoom }) {
         map.current = new mapboxgl.Map({
             style: 'mapbox://styles/ccha0057/clzza1y1e005u01oe50t28thz',
             container: mapContainer.current,
-            center: { lat: lat, lng: lng },
-            zoom: zoom,
+            center: { lat: 0, lng: 0 },
+            zoom: 1.58,
             maxBounds: [[-360, -60], [360, 60]],  // [[west, south],[east, north]]
             projection: 'equirectangular',
             maxPitch: 0,
@@ -31,7 +31,12 @@ function Map({ map, setMapLoaded, viewBounds, lat, lng, zoom }) {
             // initialise Infrared layer
             map.current.addSource('IR', {
                 'type': 'image',
-                'coordinates': viewBounds
+                'coordinates': [
+                    [-1, 1],
+                    [1, 1],
+                    [1, -1],
+                    [-1, -1]
+                ]
             }).addLayer({
                 id: 'ir-layer',
                 'slot': 'bottom',
@@ -46,7 +51,12 @@ function Map({ map, setMapLoaded, viewBounds, lat, lng, zoom }) {
             // initialise DAV layer
             map.current.addSource('DAV', {
                 'type': 'image',
-                'coordinates': viewBounds
+                'coordinates': [
+                    [-1, 1],
+                    [1, 1],
+                    [1, -1],
+                    [-1, -1]
+                ]
             }).addLayer({
                 id: 'dav-layer',
                 'slot': 'bottom',
@@ -152,7 +162,7 @@ function Map({ map, setMapLoaded, viewBounds, lat, lng, zoom }) {
             map.current.on('click', (e) => {
                 console.log(e.lngLat);
                 console.log(map.current.getZoom())
-            })
+            });
 
             // disable rotation & keyboard controls
             map.current.dragRotate.disable();
@@ -161,8 +171,6 @@ function Map({ map, setMapLoaded, viewBounds, lat, lng, zoom }) {
             setMapLoaded(true);
         });
     }, []);
-
-
 
     return (
         <div className="map-container">
