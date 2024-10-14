@@ -38,14 +38,14 @@ function CycloneList({ tcList }) {
         let basinTcList = tcBasinMap[basin];
         return (
           <ListGroupItem
-            style={{ fontWeight: 'bold', paddingTop: '6px', paddingBottom: '6px', borderRadius: '5px' }}
+            style={{ fontWeight: 'bold', paddingTop: '6px', paddingBottom: '6px'}}
           >
             {BASINS[basin]}
             <ListGroup variant='flush'>
               {basinTcList.map(tc => (
                 <ListGroupItem
                     action
-                    style={{ paddingTop: '6px', paddingBottom: '6px', borderRadius: '5px' }}
+                    style={{ paddingTop: '6px', paddingBottom: '6px'}}
                     onClick={() => navigate(`/cyclone/${tc.id}/${tc.name}`)}
                   >
                     {tc.name.charAt(0) + tc.name.slice(1).toLowerCase()}

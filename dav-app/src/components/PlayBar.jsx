@@ -26,7 +26,7 @@ function PlayBar({ numFrames, imageLayersLoaded, time }) {
             start();
           })
         }
-      }, 140);
+      }, 100);
     }
 
     return () => {
@@ -60,7 +60,7 @@ function PlayBar({ numFrames, imageLayersLoaded, time }) {
         {debouncedIcon}
       </div>
       <input type="range" style={{ accentColor: "rgb(229, 0, 229)", flex: 1 }} value={frame} min={0} max={numFrames - 1} onChange={handleSlider} />
-      <div className="time" >{(time) ? time : `${String(Math.floor(frame * 30 / 60)).padStart(2, '0')}-${String(frame * 30 % 60).padStart(2, '0')}`} (UTC)</div>
+      <div className="time" >{(time) ? time : `${String(Math.floor(frame * 30 / 60)).padStart(2, '0')}:${String(frame * 30 % 60).padStart(2, '0')}`} (UTC)</div>
     </div>
   )
 }

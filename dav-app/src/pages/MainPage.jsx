@@ -31,9 +31,6 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds }) {
   const IMAGE_PARAMS = `/${view.split('-')[0]}/${date.slice(5, 7)}/${date} ${String(Math.floor(frame * 30 / 60)).padStart(2, '0')}-${String(frame * 30 % 60).padStart(2, '0')}-00`;
 
   useEffect(() => {
-    console.log(date, lat, lng, zoom, view, viewBounds)
-  }, [])
-  useEffect(() => {
     if (!map.current) return;
     map.current.on('load', () => {
 
@@ -62,13 +59,11 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds }) {
 
   useEffect(() => {
     if (!mapLoaded) return;
-    setSourceImage('DAV');
-    setSourceImage('IR');
+    snap(0);
     fetchTcs(date);
 
     return () => {
       stop();
-      snap(0);
     }
   }, [date, mapLoaded]);
 
@@ -88,13 +83,33 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds }) {
     return (map.current.isSourceLoaded('DAV') && map.current.isSourceLoaded('IR'));
   }
 
+  const waitForLayer = (layerID) => {
+    return new Promise((resolve) => {
+      const wait = async() => {
+        let layer
+        try {
+          layer = await map.current.getLayer(layerID)
+        } catch (error) {
+          console.log(error)
+        }
+        if (layer) {
+          resolve();
+        } else {
+          setTimeout(wait, 5);
+          console.log(layerID)
+        }
+      }
+      wait();
+    });
+  }
+
   useEffect(() => {
     if (!mapLoaded) return;
     if (firstRender.current) {
       firstRender.current = false;
     } else if (view.endsWith('-a')) {
       return;
-    } 
+    }
     map.current.panTo({ lat: lat, lng: lng }, { duration: 500 });
     map.current.setPaintProperty('dav-layer', 'raster-opacity', 0);
     map.current.setPaintProperty('ir-layer', 'raster-opacity', 0);
@@ -153,7 +168,6 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds }) {
     setTcSourceData('tcs-icon', southTcList);
     map.current.setLayoutProperty('tcs-icon-layer', 'icon-rotate', frame * 360 / 24);
   }
-
   useEffect(() => {
     if (loading) return;
     if (!map.current.getLayer('tcn-icon-layer')) return;
@@ -176,6 +190,8 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds }) {
         }
       });
     });
+    setSourceImage('DAV');
+    setSourceImage('IR');
     map.current.setPaintProperty('dav-layer', 'raster-opacity', 0.6);
     map.current.setPaintProperty('ir-layer', 'raster-opacity', 0.7);
     map.current.setPaintProperty('tcn-icon-layer', 'icon-opacity', 1);
@@ -232,6 +248,7 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds }) {
           header="Toggle Layer"
         >
           <LayerToggleGroup
+            waitForLayer={waitForLayer}
             mapLoaded={mapLoaded}
             toggleVisibility={toggleVisibility}
             layerIDLists={[['dav-layer'], ['ir-layer'], ['tcs-icon-layer', 'tcn-icon-layer'], tcList.map(tc => tc.id)]}
@@ -247,7 +264,7 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds }) {
           />
         </AccordionItem>
       </AccordianGroup>
-      <Legend/>
+      <Legend />
     </div>
   );
 }

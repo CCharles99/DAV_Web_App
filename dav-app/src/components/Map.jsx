@@ -21,7 +21,7 @@ function Map({ map, setMapLoaded }) {
             container: mapContainer.current,
             center: { lat: 0, lng: 0 },
             zoom: 1.58,
-            maxBounds: [[-360, -60], [360, 60]],  // [[west, south],[east, north]]
+            // maxBounds: [[-360, -60], [360, 60]],  // [[west, south],[east, north]]
             projection: 'equirectangular',
             maxPitch: 0,
         });

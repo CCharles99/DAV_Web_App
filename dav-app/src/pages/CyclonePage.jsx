@@ -61,6 +61,26 @@ function CyclonePage() {
         });
     }
 
+    const waitForLayer = (layerID) => {
+        return new Promise((resolve) => {
+            const wait = async () => {
+                let layer
+                try {
+                    layer = await map.current.getLayer(layerID)
+                } catch (error) {
+                    console.log(error)
+                }
+                if (layer) {
+                    resolve();
+                } else {
+                    setTimeout(wait, 5);
+                    console.log('oop')
+                }
+            }
+            wait();
+        });
+    }
+
     useEffect(() => {
         getData().then((tcData) => {
             waitForMap().then(() => {
@@ -74,7 +94,7 @@ function CyclonePage() {
                         'coordinates': [[-180, 60], [180, 60], [180, -60], [-180, -60]],
                         'url': BASE_URL_IM + 'track' + `/id/${tcName}_${tcID}`
                     }).addLayer({
-                        id: tcID,
+                        id: 'tc-track',
                         'slot': 'middle',
                         'type': 'raster',
                         'source': 'tcTrack',
@@ -163,9 +183,10 @@ function CyclonePage() {
                     header="Toggle Layers"
                 >
                     <LayerToggleGroup
+                        waitForLayer={waitForLayer}
                         mapLoaded={mapLoaded}
                         toggleVisibility={toggleVisibility}
-                        layerIDLists={[['dav-layer'], ['ir-layer'], [tcID]]}
+                        layerIDLists={[['dav-layer'], ['ir-layer'], ['tc-track']]}
                         labels={['Show DAV', 'Show IR', 'Show Track']}
                     />
                 </AccordionItem>
@@ -179,7 +200,7 @@ function CyclonePage() {
                     </Spinner>
                 }
             </TCInfoCard>
-            <Legend/>
+            <Legend />
         </div>
     );
 }

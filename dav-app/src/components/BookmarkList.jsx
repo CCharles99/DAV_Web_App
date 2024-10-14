@@ -61,7 +61,7 @@ function BookmarkList({ handleSearch, lng, lat, zoom, view, date, setBookmark })
                 {bookmarkList.map(bookmark => (
                     <ListGroupItem
                         action
-                        style={{ padding:'0px', borderRadius: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}
+                        style={{ padding:'0px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}
                     >
                         <Button
                             variant='flush'

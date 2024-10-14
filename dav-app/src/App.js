@@ -7,7 +7,8 @@ import DateSearchBar from './components/DateSearchBar'
 import CycloneSearchBar from './components/CycloneSearchBar'
 import viewData from './data/ViewData.json';
 import React from 'react';
-import { Col, Container} from 'react-bootstrap';
+import { Col, Container, Button } from 'react-bootstrap';
+import { BsQuestionCircle } from 'react-icons/bs';
 
 
 function Test() {
@@ -36,16 +37,18 @@ function App() {
     <div >
       <Navbar className="bg-body-tertiary" data-bs-theme="dark">
         <Container fluid>
-            <Col lg={1.5} sm={1.5} md={2}>
-              <Navbar.Brand>DAV App</Navbar.Brand>
-            </Col>
-            <Col xl={2}>
-              <DateSearchBar date={searchParams.get("date") || undefined} handleSearch={handleSearch} />
-            </Col>
-            <Col sm={3} >
-              <CycloneSearchBar />
-            </Col>
-            <Col lg={2}/>
+          <Col lg={1.5} sm={1.5} md={2}>
+            <Navbar.Brand>DAV App</Navbar.Brand>
+          </Col>
+          <Col sm={2}>
+            <DateSearchBar date={searchParams.get("date") || undefined} handleSearch={handleSearch} />
+          </Col>
+          <Col sm={3} >
+            <CycloneSearchBar />
+          </Col>
+          <Col sm={2}>
+          </Col>
+          <BsQuestionCircle color='white' size='24px' />
         </Container>
       </Navbar>
       <Routes>

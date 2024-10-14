@@ -16,6 +16,10 @@ body, html {
     width: 100%;
 }
 
+input[type="checkbox"] {
+    cursor: pointer;
+}
+
 
 
 .datesearchbar-container {
@@ -45,6 +49,7 @@ body, html {
 .play-icon-container {
     background-color: rgb(222, 226, 230);
     border-radius: 100%;
+    box-shadow:0px 0px 0px 1px purple inset;
 }
 
 .time {
@@ -73,6 +78,7 @@ body, html {
     right: 250px;
     position: absolute;
     display: flex;
+    gap: 6px;
     align-items: center;
 }
 
