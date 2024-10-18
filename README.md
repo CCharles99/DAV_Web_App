@@ -65,3 +65,13 @@ To run this app on Windows in development mode, use separate terminal windows to
 ```
 
 Further details about activating the python virtual environment and commands for mac/linux can be found [here](https://docs.python.org/3/library/venv.html)
+
+## Run testing suite
+To run unit tests, 
+```
+<your_root_directory>\DAV_Web_app\backend> 
+> npm test
+<your_root_directory>\DAV_Web_app\dav-app>
+> npm test
+```
+A useful tool on VSCode is the [Jest test runner by Orta](vscode:extension/orta.vscode-jest) ([weblink](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest))
