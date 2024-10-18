@@ -105,7 +105,7 @@ function CycloneSearchBar() {
             onFocus={handleFocus}
             style={{minWidth: '90px'}}
           />
-          <Button variant="outline-secondary" type="submit">
+          <Button variant="outline-secondary" type="submit" aria-label='search'>
             Search
           </Button>
         </Form>
@@ -125,6 +125,7 @@ function CycloneSearchBar() {
                 key={index}
                 action
                 onClick={() => handleSuggestionClick(suggestion)}
+                aria-label='Suggestion'
               >
                 {suggestion}
               </ListGroup.Item>

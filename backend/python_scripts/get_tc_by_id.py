@@ -33,7 +33,7 @@ def main():
         date = None
     
     
-    reader = tc_info.IbtracsReader('C:/Users/cjcha/Dev/ReactProjects/DAV_Web_App/backend/python_scripts/IBTrACS.ALL.v04r01.nc', columns=('iso_time', 'lat', 'lon', 'basin'))  # cols can be changed
+    reader = tc_info.IbtracsReader('C:/Users/cjcha/Dev/ReactProjects/DAV_Web_App/backend/python_scripts/IBTrACS.ALL.v04r01.nc', columns=('iso_time', 'lat', 'lon', 'basin', 'name'))  # cols can be changed
     print('[', end='')
     for tc_id in tc_id_list:
         tc_data = reader.read(int(tc_id))
@@ -48,6 +48,7 @@ def main():
         result["center"] = center if date is None else selected_center
         result["time"] = time if date is None else selected_time
         result["basin"] = Counter(tc_data["basin"]).most_common(1)[0][0]
+        result["name"] = tc_data["name"]
         
         result = json.dumps(result)
         print(result + ',', end='')

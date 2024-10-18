@@ -1,24 +1,15 @@
 import './App.css';
-import { Routes, Route, useSearchParams, useParams } from 'react-router-dom';
+import { Routes, Route, useSearchParams } from 'react-router-dom';
 import Navbar from 'react-bootstrap/Navbar';
 import MainPage from './pages/MainPage';
 import CyclonePage from './pages/CyclonePage';
+import AboutPage from './pages/AboutPage';
 import DateSearchBar from './components/DateSearchBar'
 import CycloneSearchBar from './components/CycloneSearchBar'
 import viewData from './data/ViewData.json';
 import React from 'react';
-import { Col, Container, Button } from 'react-bootstrap';
+import { Col, Container } from 'react-bootstrap';
 import { BsQuestionCircle } from 'react-icons/bs';
-
-
-function Test() {
-  let { id } = useParams();
-  return (
-    <div style={{ fontSize: "50px" }}>
-      Now showing {id}
-    </div>
-  );
-}
 
 function App() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -34,21 +25,27 @@ function App() {
   }
 
   return (
-    <div >
-      <Navbar className="bg-body-tertiary" data-bs-theme="dark">
+    <div>
+      <Navbar className="border border-light-subtle bg-body-tertiary" data-bs-theme="dark">
         <Container fluid>
           <Col lg={1.5} sm={1.5} md={2}>
-            <Navbar.Brand>DAV App</Navbar.Brand>
+            <Navbar.Brand href='/'>DAV App</Navbar.Brand>
           </Col>
           <Col sm={2}>
             <DateSearchBar date={searchParams.get("date") || undefined} handleSearch={handleSearch} />
           </Col>
-          <Col sm={3} >
+          <Col sm={3}>
             <CycloneSearchBar />
           </Col>
-          <Col sm={2}>
+          <Col sm={2} className="d-flex justify-content-end align-items-center">
+          <a className='icon-link' href='/about'>
+
+            <div className='text-body p-1'>
+              About DAV
+            </div>
+            <BsQuestionCircle className='pe-auto text-body' size='24px'  />
+          </a>
           </Col>
-          <BsQuestionCircle color='white' size='24px' />
         </Container>
       </Navbar>
       <Routes>
@@ -66,8 +63,8 @@ function App() {
             />
           }
         />
-        <Route path="/test/:id" element={<Test />} />
         <Route path="/cyclone/:tcID/:tcName" element={<CyclonePage />} />
+        <Route path='/about' element={<AboutPage />} />
       </Routes>
     </div>
   )

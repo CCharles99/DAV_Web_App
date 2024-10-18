@@ -2,8 +2,8 @@ import { Card, Image } from 'react-bootstrap';
 import IRColorbar from '../assets/IRColorbar.png';
 import DAVColorbar from '../assets/DAVColorbar.png';
 import TrackColorbar from '../assets/TrackColorbar.png';
-
-function Legend() {
+import React from 'react';
+const Legend = React.memo(() => {
 
   return (
     <div className='legend-container'>
@@ -20,6 +20,6 @@ function Legend() {
       </Card>
     </div>
   );
-}
+});
 
 export default Legend;

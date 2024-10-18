@@ -3,14 +3,23 @@ import { ListGroupItem } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 
 
-function LayerToggle({ mapLoaded, toggleVisibility, layerIDs, label, waitForLayer }) {
+const LayerToggle = React.memo(({ mapLoaded, toggleVisibility, layerIDs, label, waitForLayer }) => {
 
     const [visible, setVisible] = useState(true);
 
     useEffect(() => {
         if (!mapLoaded) return;
-        console.log('h')
-        layerIDs.forEach(layer => waitForLayer(layer).then(() => toggleVisibility(layer, visible)))
+        layerIDs.forEach(layer => {
+            waitForLayer(layer)
+                .then(() => {
+                    try {
+                        toggleVisibility(layer, visible)
+
+                    } catch (err) {
+                        console.log(err)
+                    }
+                });
+        })
     }, [visible, layerIDs]);
 
     return (
@@ -19,9 +28,10 @@ function LayerToggle({ mapLoaded, toggleVisibility, layerIDs, label, waitForLaye
             type="checkbox"
             label={label}
             checked={visible}
+            aria-label='Layer Toggle'
             onChange={() => setVisible(show => !show)}
         />
     );
-}
+});
 
 export default LayerToggle;

@@ -34,8 +34,9 @@ function DateSearchBar({handleSearch, date}) {
                     value={dateValue}
                     min="2022-09-01"
                     max="2022-09-30"
+                    aria-label='Date Selector'
                 />
-                <Button variant="outline-secondary" type="submit">
+                <Button variant="outline-secondary" type="submit" aria-label='Go'>
                     Go
                 </Button>
         </Form>

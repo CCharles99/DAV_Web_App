@@ -8,10 +8,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/image', require('./routes/image'));
-app.use('/tc', require('./routes/tc'));
+const { imgRouter } = require('./routes/image');
+app.use('/image', imgRouter);
 
-app.use('/test', require('./routes/test'));
+const { tcRouter } = require('./routes/tc');
+app.use('/tc', tcRouter);
+
 /**
  * Start server
  */

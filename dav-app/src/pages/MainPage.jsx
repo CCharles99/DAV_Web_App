@@ -86,17 +86,11 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds }) {
   const waitForLayer = (layerID) => {
     return new Promise((resolve) => {
       const wait = async() => {
-        let layer
-        try {
-          layer = await map.current.getLayer(layerID)
-        } catch (error) {
-          console.log(error)
-        }
+        let layer = await map.current.getLayer(layerID)
         if (layer) {
           resolve();
         } else {
           setTimeout(wait, 5);
-          console.log(layerID)
         }
       }
       wait();
@@ -137,9 +131,8 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds }) {
 
 
   const updateTcIconPositions = async (tcList) => {
-
     // filter out tcs that don't have data for the current frame
-    tcList = tcList.filter(tc => (frame >= tc.minFrame) && (frame <= tc.maxFrame))
+    tcList = tcList.filter(tc => (frame >= tc.minFrame) && (frame <= tc.minFrame + tc.center.length -1))
 
     const setTcSourceData = (source, list) => {
       map.current.getSource(source).setData({
@@ -196,6 +189,7 @@ function MainPage({ handleSearch, date, lat, lng, zoom, view, viewBounds }) {
     map.current.setPaintProperty('ir-layer', 'raster-opacity', 0.7);
     map.current.setPaintProperty('tcn-icon-layer', 'icon-opacity', 1);
     map.current.setPaintProperty('tcs-icon-layer', 'icon-opacity', 1);
+    tcList.forEach(tc => console.log(tc.maxFrame))
 
     return () => {
       tcList.forEach(tc => {

@@ -11,13 +11,11 @@ const filterData = (data) => {
         // strip lats of unusable values
         let maxValidLatIndex = tc.center.findLastIndex(center => (Math.abs(center[1]) <= 60));
         let maxValidIndex = Math.min(maxValidTimeIndex, maxValidLatIndex);
-        
         return maxValidIndex > -1 ? {
             ...tc,
             center: tc.center.slice(minValidIndex, maxValidIndex + 1),
             time: tc.time.slice(minValidIndex, maxValidIndex + 1),
             minFrame: parseInt(tc.time[minValidIndex].substring(11, 13)) * 2 + (tc.time[minValidIndex].substring(14, 16) === '30'),
-            maxFrame: parseInt(tc.time[maxValidIndex].substring(11, 13)) * 2 + (tc.time[maxValidIndex].substring(14, 16) === '30')
         } : null;
     }).filter(tc => tc != null);
 }
@@ -34,7 +32,6 @@ router.route('/byDate/:date').get((req, res) => {
                     let tcData = JSON.parse(output);
                     tcData.pop();
                     tcData = tcNameIDList.map((tc, index) => ({ ...tc, ...tcData[index] }));
-                    
                     res.status(200).send(filterData(tcData));
                 })
                 .catch(err => {
@@ -84,4 +81,7 @@ router.route('/track_intensity/:tcID').get((req, res) => {
     });
 })
 
-module.exports = router;
+module.exports = {
+    tcRouter: router, 
+    filterData: filterData,
+};

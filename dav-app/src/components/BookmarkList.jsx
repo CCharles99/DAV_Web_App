@@ -61,21 +61,22 @@ function BookmarkList({ handleSearch, lng, lat, zoom, view, date, setBookmark })
                 {bookmarkList.map(bookmark => (
                     <ListGroupItem
                         action
-                        style={{ padding:'0px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}
+                        style={{ padding: '0px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}
                     >
                         <Button
                             variant='flush'
-                            style={{ textAlign: 'left',  paddingTop: '6px', paddingBottom: '6px', paddingLeft: '16px', margin: '0px', height: '100%', width: '80%', scrollbarWidth: 'none', overflowX: 'auto' }}
+                            style={{ textAlign: 'left', paddingTop: '6px', paddingBottom: '6px', paddingLeft: '16px', margin: '0px', height: '100%', width: '80%', scrollbarWidth: 'none', overflowX: 'auto' }}
                             onClick={() => handleBookmarkSelect(bookmark)}
                         >
                             {bookmark.name}
                         </Button>
                         <Button
                             variant='flush'
-                            style={{ padding: '0px', paddingBottom: '7px', paddingRight: '6px'}}
+                            style={{ padding: '0px', paddingBottom: '7px', paddingRight: '6px' }}
                             onClick={() => handleDelete(bookmark.name)}
+                            aria-label='Delete Bookmark'
                         >
-                            <BsTrashFill size='20px'/>
+                            <BsTrashFill size='20px' />
                         </Button>
                     </ListGroupItem>
                 ))}
@@ -85,6 +86,7 @@ function BookmarkList({ handleSearch, lng, lat, zoom, view, date, setBookmark })
                     variant='flush'
                     style={{ padding: '0px' }}
                     onClick={() => setShowModal(true)}
+                    aria-label='Add Bookmark'
                 >
                     <BsPlusCircleFill size='24px' />
                 </Button>

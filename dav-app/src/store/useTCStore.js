@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 const useTcStore = create((set) => ({
   tcList: [],
   prevTcList: [],
@@ -10,7 +12,7 @@ const useTcStore = create((set) => ({
     set({ loading: true });
     set((state) => ({prevTcList: state.tcList}))
     set({ tcList: [] });
-    axios.get(`http://localhost:5000/tc/byDate/${newDate}`)
+    axios.get(`${BASE_URL}tc/byDate/${newDate}`)
       .then(res => set({ tcList: res.data }))
       .catch(err => console.log(err))
       .finally(() => {

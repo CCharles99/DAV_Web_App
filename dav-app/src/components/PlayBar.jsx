@@ -1,13 +1,15 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BsPlayCircle, BsPauseCircle } from "react-icons/bs";
 import useTimerStore from '../store/useTimerStore.js';
 import useDebounce from "../custom-hooks/useDebounce.jsx";
 
 function PlayBar({ numFrames, imageLayersLoaded, time }) {
-  const [icon, setIcon] = useState(<BsPlayCircle color='purple' size='40px' onClick={() => start()} />);
+  const PLAY = <BsPlayCircle color='purple' size='40px' onClick={() => start()} aria-label="Play"/>
+  const PAUSE = <BsPauseCircle size='40px' color="purple" onClick={() => stop()} aria-label="Pause"/>
+  const [icon, setIcon] = useState(PLAY);
   const debouncedIcon = useDebounce(icon, 100);
 
-  const { frame, isPlaying, start, stop, snap, increment, setMaxFrame } = useTimerStore();
+  const { frame, isPlaying, isBuffering, start, stop, snap, increment, setMaxFrame, setBuffering } = useTimerStore();
 
   useEffect(() => {
     setMaxFrame(numFrames);
@@ -16,24 +18,31 @@ function PlayBar({ numFrames, imageLayersLoaded, time }) {
   useEffect(() => {
     let timer;
     if (isPlaying) {
-      setIcon(<BsPauseCircle size='40px' color="purple" onClick={() => stop()} />)
+      setIcon(PAUSE)
       timer = setInterval(() => {
         if (imageLayersLoaded()) {
           increment();
         } else {
           stop();
-          waitForLayers().then(() => {
-            start();
-          })
+          setBuffering(true);
         }
-      }, 100);
-    }
+      }, 300);
+    } 
 
     return () => {
-      setIcon(<BsPlayCircle color='purple' size='40px' onClick={() => start()} />)
+      setIcon(PLAY);
       if (timer) clearInterval(timer);
     };
   }, [isPlaying, increment]);
+
+  useEffect(() => {
+    if (isBuffering) {
+      waitForLayers().then(() => {
+        start();
+        setBuffering(false);
+      })
+    }
+  },[isBuffering])
 
   const handleSlider = (event) => {
     snap(parseInt(event.target.value));

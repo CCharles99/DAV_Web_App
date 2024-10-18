@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "dav-app",
+			"path": "dav-app"
+		},
+		{
+			"name": "backend",
+			"path": "backend"
+		}
+	],
+	"settings": {
+		"jest.disabledWorkspaceFolders": [
+			"DAV_Web_App"
+		]
+	}
+}

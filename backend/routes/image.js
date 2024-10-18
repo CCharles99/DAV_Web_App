@@ -1,11 +1,12 @@
 const fs = require('fs')
 const express = require('express');
 const router = express.Router();
+const path = require('path');
 const runPythonProcess = require('../runPythonProcess')
 
 
 router.route('/:type/:view/:name/:datetime').get((req, res) => {
-    let filePath = `./images/${req.params.type}/${req.params.view}/${req.params.name}/${req.params.datetime}.png`;
+    let filePath = path.join(__dirname, `../images/${req.params.type}/${req.params.view}/${req.params.name}/${req.params.datetime}.png`);
     fs.readFile(filePath, (err, imageData) => {
         if (err) {
             res.status(404).send(err);
@@ -16,7 +17,7 @@ router.route('/:type/:view/:name/:datetime').get((req, res) => {
 });
 
 router.route('/track/id/:tcIDName').get((req, res) => {
-    let filePath = `./images/TRACKS/TC/${req.params.tcIDName}.png`;
+    let filePath = path.join(__dirname, `../images/TRACKS/TC/${req.params.tcIDName}.png`);
     fs.readFile(filePath, (err, imageData) => {
         if (err) {
             res.status(404).send(err);
@@ -33,7 +34,7 @@ router.route('/track/date/:date').post((req, res) => {
 });
 
 router.route('/track/date/:date').get((req, res) => {
-    let filePath = `./images/Tracks/DATE/${req.params.date}.png`;
+    let filePath = path.join(__dirname, `../images/Tracks/DATE/${req.params.date}.png`);
     fs.readFile(filePath, (err, imageData) => {
         if (err) {
             res.status(404).send(err);
@@ -44,4 +45,4 @@ router.route('/track/date/:date').get((req, res) => {
 });
 
 
-module.exports = router;
+module.exports = { imgRouter: router };

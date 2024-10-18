@@ -50,6 +50,7 @@ input[type="checkbox"] {
     background-color: rgb(222, 226, 230);
     border-radius: 100%;
     box-shadow:0px 0px 0px 1px purple inset;
+    cursor: pointer;
 }
 
 .time {

@@ -13,6 +13,7 @@ import useTimerStore from '../store/useTimerStore.js';
 import Legend from '../components/Legend.jsx'
 
 function CyclonePage() {
+    const [error, setError] = useState({ message: '', status: false });
     const map = useRef();
     const [mapLoaded, setMapLoaded] = useState(false); // map.loaded() doesn't work as expected
 
@@ -25,25 +26,34 @@ function CyclonePage() {
 
     const { frame, stop, snap } = useTimerStore();
     // const [datetime, setDatetime] = useState();
-
-    const BASE_URL_IM = 'http://localhost:5000/image/';
+    const BASE_URL = process.env.REACT_APP_BASE_URL;
+    const BASE_URL_IM = BASE_URL + 'image/';
 
     const getData = async () => {
-        let tcData = await axios.get(`http://localhost:5000/tc/byID/${JSON.stringify([tcID.toString()])}`)
-            .then(res => {
-                let newTcData = res.data[0];
-                setTcData(() => tcData);
-                return newTcData;
-            });
+        console.log(tcName, tcID);
+        let tcData;
+        try {
+            let res = await axios.get(`${BASE_URL}tc/byID/${JSON.stringify([tcID.toString()])}`)
+            tcData = res.data[0];
+            if (tcData.name !== tcName) {
+                setError({ message: `TC ID does not match TC Name. Expected pair: (${tcID}, ${tcData.name})`, status: true });
+                return;
+            }
+            setTcData(() => tcData);
+        } catch (error) {
+            setError({ message: `TC ID does not exist: ${tcID}`, status: true });
+            return;
+        }
 
-        await axios.get(`http://localhost:5000/tc/track_dav/${tcID}`)
+        await axios.get(`${BASE_URL}tc/track_dav/${tcID}`)
             .then(res => {
                 setCenterDAV(() => res.data);
             });
 
-        await axios.get(`http://localhost:5000/tc/track_intensity/${tcID}`)
+        await axios.get(`${BASE_URL}tc/track_intensity/${tcID}`)
             .then(res => {
                 setCenterIntensity(() => res.data);
+
             });
         return tcData;
     }
@@ -170,37 +180,42 @@ function CyclonePage() {
 
     return (
         <div className="page">
-            {(tcData)
-                ? <Map map={map} setMapLoaded={setMapLoaded} />
-                : <></>
-            }
-            <PlayBar imageLayersLoaded={imageLayersLoaded} numFrames={tcData ? tcData.time.length : 0} time={tcData?.time[frame].slice(11, 16)} />
-            <AccordianGroup
-            />
-            <AccordianGroup defaultActiveKey={"0"} >
-                <AccordionItem
-                    eventKey="0"
-                    header="Toggle Layers"
-                >
-                    <LayerToggleGroup
-                        waitForLayer={waitForLayer}
-                        mapLoaded={mapLoaded}
-                        toggleVisibility={toggleVisibility}
-                        layerIDLists={[['dav-layer'], ['ir-layer'], ['tc-track']]}
-                        labels={['Show DAV', 'Show IR', 'Show Track']}
+            {error.status ? <h1>{error.message}</h1> : (
+                <>
+
+                    {(tcData)
+                        ? <Map map={map} setMapLoaded={setMapLoaded} />
+                        : <></>
+                    }
+                    <PlayBar imageLayersLoaded={imageLayersLoaded} numFrames={tcData ? tcData.time.length : 0} time={tcData?.time[frame].slice(11, 16)} />
+                    <AccordianGroup
                     />
-                </AccordionItem>
-            </AccordianGroup>
-            <TCInfoCard tcData={tcData} tcName={tcName} frame={frame}>
-                {(centerDAV) && (tcData) ?
-                    <LineGraph centerDAV={centerDAV} centerIntensity={centerIntensity} frame={frame} />
-                    :
-                    <Spinner animation="border" role="status">
-                        <span className="visually-hidden">Loading...</span>
-                    </Spinner>
-                }
-            </TCInfoCard>
-            <Legend />
+                    <AccordianGroup defaultActiveKey={"0"} >
+                        <AccordionItem
+                            eventKey="0"
+                            header="Toggle Layers"
+                        >
+                            <LayerToggleGroup
+                                waitForLayer={waitForLayer}
+                                mapLoaded={mapLoaded}
+                                toggleVisibility={toggleVisibility}
+                                layerIDLists={[['dav-layer'], ['ir-layer'], ['tc-track']]}
+                                labels={['Show DAV', 'Show IR', 'Show Track']}
+                            />
+                        </AccordionItem>
+                    </AccordianGroup>
+                    <TCInfoCard tcData={tcData} tcName={tcName} frame={frame}>
+                        {(centerDAV) && (tcData) ?
+                            <LineGraph centerDAV={centerDAV} centerIntensity={centerIntensity} frame={frame} />
+                            :
+                            <Spinner animation="border" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </Spinner>
+                        }
+                    </TCInfoCard>
+                    <Legend />
+                </>
+            )}
         </div>
     );
 }
